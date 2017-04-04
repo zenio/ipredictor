@@ -13,6 +13,7 @@ from ipredictor.tools import data_reader
 
 
 POINTS_DATA_FILE = 'assets/points.csv'
+INTERVALS_DATA_FILE = 'assets/intervals.csv'
 
 
 class DataReaderTestCase(unittest.TestCase):
@@ -28,3 +29,8 @@ class DataReaderTestCase(unittest.TestCase):
 		value = dataframe['values'][0]
 		self.assertIsInstance(dt, datetime)
 		self.assertEqual(type(value), np.float32)
+
+	def test_if_can_read_intervals(self):
+		dataframe = data_reader(INTERVALS_DATA_FILE, intervals=True)
+		self.assertIn('mins', dataframe)
+		self.assertIn('maxs', dataframe)

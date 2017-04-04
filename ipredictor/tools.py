@@ -22,11 +22,15 @@ def data_reader(filename, intervals=False, resample=False, sep=";"):
 	:param resample: if true, will resample missing rows in data
 	:param sep: data file cells separator
 
-	:return: formatted and resampled (if necessary) dataframe
+	:return: formatted and resampled (if necessary) dataframe. If interval
+			 valued data then 'minimums' & 'maximums' columns returned,
+			 otherwise only 'values' column returnd for point data
+
 	"""
-	headers = ['datetime', 'values']
-	dtypes = {'values': np.float32}
+	dtypes = {'values': np.float32, 'maxs': np.float32, 'mins': np.float32}
 	date_parsers = ['datetime']
+	headers = ['datetime']
+	headers.extend(['mins', 'maxs'] if intervals else ['values'])
 
 	data = pd.read_csv(filename, sep=sep, names=headers, dtype=dtypes,
 	                   parse_dates=date_parsers)
