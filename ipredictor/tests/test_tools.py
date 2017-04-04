@@ -7,8 +7,6 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from datetime import datetime
-
 from ipredictor.tools import data_reader
 
 
@@ -25,12 +23,16 @@ class DataReaderTestCase(unittest.TestCase):
 
 	def test_if_data_properly_formatted(self):
 		dataframe = data_reader(POINTS_DATA_FILE)
-		dt = dataframe['datetime'][0]
 		value = dataframe['values'][0]
-		self.assertIsInstance(dt, datetime)
 		self.assertEqual(type(value), np.float32)
 
 	def test_if_can_read_intervals(self):
 		dataframe = data_reader(INTERVALS_DATA_FILE, intervals=True)
 		self.assertIn('mins', dataframe)
 		self.assertIn('maxs', dataframe)
+
+	def test_if_data_is_resampled_when_necessary(self):
+		resampled = data_reader(POINTS_DATA_FILE, resample=True)
+		delta =  resampled.index[1] - resampled.index[0]
+		self.assertEqual(delta.components.hours, 1)
+
