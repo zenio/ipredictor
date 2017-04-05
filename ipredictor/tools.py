@@ -37,7 +37,6 @@ def data_reader(filename, intervals=False, resample=None, sep=";",
 
 	data = pd.read_csv(filename, sep=sep, names=headers, dtype=dtypes,
 	                   parse_dates=date_parsers, index_col='datetime')
-
 	if resample:
 		data = data.resample(resample_period).mean().interpolate(method='time')
 	return data
