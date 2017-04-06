@@ -30,15 +30,14 @@ class BaseModelTestCase(unittest.TestCase):
 		self.assertEqual(len(self.model.data), len(self.dataframe))
 		self.assertEqual(self.model.index[0], self.dataframe.index[0])
 
-	def test_if_predict_returns_result(self):
-		predict = self.model.predict(steps=self.test_size)
-		self.assertIsInstance(predict, Prediction)
-		self.assertIsNotNone(predict.rmse)
-		self.assertIsNotNone(predict.elapsed_time)
-		self.assertIsInstance(predict.result, DataFrame)
-
 	def test_if_rmse_calculated(self):
 		result = self.model._calculate_rmse(np.array([0, 1]), np.array([1, 2]))
 		self.assertEqual(result, np.sqrt(2))
 		result = self.model._calculate_rmse(np.array([0, 0]), np.array([3, 3]))
 		self.assertEqual(result, np.sqrt(18))
+
+	def test_if_can_provide_own_predefined_weights(self):
+		alpha = beta = gamma = 1
+		coefs = [alpha, beta, gamma]
+		self.model.coefs = coefs
+		self.assertSequenceEqual(self.model.coefs, coefs)

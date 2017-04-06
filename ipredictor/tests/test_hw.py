@@ -23,6 +23,7 @@ class HWTestCase(unittest.TestCase):
 		self.model = HoltWinters(self.dataframe,
 		                         season_period=self.season_period)
 		self.model._init_starting_arrays()
+		self.model.coefs = [0.5, 0.5, 0.5]
 
 	def test_if_data_length_compared_to_season_period(self):
 		#: 2 seasons of data required for proper HW model initialisation
@@ -67,5 +68,16 @@ class HWTestCase(unittest.TestCase):
 		self.model.T.append(0)
 		calculated_season = self.model._predict_seasonal(0, gamma)
 		self.assertTrue(np.isclose(expected, calculated_season, rtol=1e-03))
+
+	def test_if_can_predict_for_given_steps_ahead(self):
+		self.model.predict()
+		expected = 3.25
+		self.assertTrue(np.isclose(self.model.Xf[0], expected, rtol=1e-03))
+
+	def test_if_coefs_validated_before_use(self):
+		coefs = [2, 1, 1]
+		with self.assertRaises(ValueError):
+			self.model.coefs = coefs
+
 
 

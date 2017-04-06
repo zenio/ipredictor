@@ -15,6 +15,7 @@ class BasePredictModel(object):
 		Xf: predicted values array
 		steps: number of preditction steps
 		index: array of timestamps or other type of indexes
+		coefs: coefficients, weights matrix and etc used by model logic
 	"""
 	__metaclass__ = ABCMeta
 
@@ -24,7 +25,9 @@ class BasePredictModel(object):
 		self.steps = 1
 		self.data = data
 		self.X = data['values'].values
+		self.Xf = []
 		self.index = data.index
+		self._coefs = None
 
 	def predict(self, steps=1):
 		self.steps = steps
@@ -56,6 +59,20 @@ class BasePredictModel(object):
 		return np.sqrt((sum([(m - n) ** 2 for m, n in
 		                     zip(real, predicted)])).mean())
 
+	@property
+	def coefs(self):
+		"""Returns current coefs used by model
+		Weights can be array as for HW model, or filepath as for ANN model, or
+		something else.
+		"""
+		return self._coefs
+
+	@coefs.setter
+	def coefs(self, value):
+		"""Sets weights of model. Descendant model should validate if
+		coefs are properly set
+		"""
+		raise NotImplementedError("Please implement this method")
 
 class Prediction(object):
 	"""

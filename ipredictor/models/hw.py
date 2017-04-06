@@ -1,7 +1,7 @@
 #: -*- coding: utf-8 -*-
 import numpy as np
 
-from base import BasePredictModel, Prediction
+from base import BasePredictModel
 
 from ipredictor.defaults import SEASON_PERIOD
 
@@ -34,6 +34,28 @@ class HoltWinters(BasePredictModel):
 		self.L = []
 		self.T = []
 		self.S = []
+		self.alpha = self.beta = self.gamma = None
+
+	@BasePredictModel.coefs.setter
+	def coefs(self, value):
+		"""Sets weights of model. Descendant model should validate if
+		coefs are properly set
+		"""
+		self._check_initial_coefs(value)
+		self.alpha, self.beta, self.gamma = self._coefs = value
+
+	def _check_initial_coefs(self, coefs):
+		"""Set up initial coefficients
+		:param alpha: level smooting coefficient
+		:param beta: trend smooting coefficient
+		:param gamma: seasonal factor smooting coefficient
+		:raises ValueError: if given coefs negative or greater that 1
+		"""
+		alpha, beta, gamma = coefs
+		if any([alpha is not None and (alpha > 1 or alpha < 0),
+		        beta is not None  and (beta > 1 or beta < 0),
+		        gamma is not None and (gamma > 1 or gamma < 0)]):
+			raise ValueError(u"Given coef values should be in range [0;1]")
 
 	def _init_level_array(self):
 		"""Fills initial values of level array"""
@@ -91,4 +113,10 @@ class HoltWinters(BasePredictModel):
 		"""Model prediction logic
 		"""
 		self._init_starting_arrays()
+		for step in range(0, len(self.X)):
+			self.L.append(self._predict_level(step, self.alpha))
+			self.T.append(self._predict_trend(self.beta))
+			self.S.append(self._predict_seasonal(step, self.gamma))
+			#: using forecasted seasonal factor from previous period
+			self.Xf.append(self.L[-1] + self.T[-1] + self.S[-self.q])
 
