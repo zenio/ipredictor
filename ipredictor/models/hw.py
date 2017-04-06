@@ -16,10 +16,11 @@ class HoltWinters(BasePredictModel):
 		Properties:
 			L: calculated level values array
 			T: calculated trend values array
+			S: calculated season coefs array
 			q: season period
 
 		:param data: initial training dataframe
-		:param season_period: data season period
+		:param season_period: seasonal periodicity of data
 		"""
 		BasePredictModel.__init__(self, data)
 
@@ -43,8 +44,14 @@ class HoltWinters(BasePredictModel):
 		self.T = [sum([self.X[i + self.q] - self.X[i]
 		               for i in range(self.q)]) / (self.q ** 2)]
 
+	def _init_seasons_array(self):
+		"""Seasons array is calculated from first season of provided data and
+		previously calculated level value"""
+		self.S = [self.X[i] - self.L[0] for i in range(self.q)]
+
 	def _predict(self):
 		"""Model prediction logic
 		"""
 		self._init_level_array()
 		self._init_trend_array()
+		self._init_seasons_array()
