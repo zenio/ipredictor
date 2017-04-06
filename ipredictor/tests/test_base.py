@@ -41,3 +41,8 @@ class BaseModelTestCase(unittest.TestCase):
 		coefs = [alpha, beta, gamma]
 		self.model.coefs = coefs
 		self.assertSequenceEqual(self.model.coefs, coefs)
+
+	def test_if_coefs_automatically_been_calculated_if_not_provided(self):
+		self.assertIsNone(self.model.coefs)
+		self.model.predict()
+		self.assertIsNotNone(self.model.coefs)

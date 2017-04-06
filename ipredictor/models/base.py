@@ -31,6 +31,8 @@ class BasePredictModel(object):
 
 	def predict(self, steps=1):
 		self.steps = steps
+		if not self._coefs:
+			self._find_coefs()
 		self._predict()
 		return self._result()
 
@@ -72,6 +74,10 @@ class BasePredictModel(object):
 		"""Sets weights of model. Descendant model should validate if
 		coefs are properly set
 		"""
+		raise NotImplementedError("Please implement this method")
+
+	def _find_coefs(self):
+		"""Automatically find optimal coefs for model"""
 		raise NotImplementedError("Please implement this method")
 
 class Prediction(object):

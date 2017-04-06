@@ -11,3 +11,6 @@ RESAMPLE_PERIOD = 'H'
 
 #: default season period is 24 hours for hourly resampled data
 SEASON_PERIOD = 24
+
+#: start coefs for optimization routine
+INITIAL_COEF = 0.1

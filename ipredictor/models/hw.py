@@ -1,9 +1,11 @@
 #: -*- coding: utf-8 -*-
+import itertools
 import numpy as np
 
 from base import BasePredictModel
 
-from ipredictor.defaults import SEASON_PERIOD
+from ipredictor.defaults import SEASON_PERIOD, INITIAL_COEF
+from scipy.optimize import fmin_l_bfgs_b
 
 
 class HoltWinters(BasePredictModel):
@@ -113,10 +115,34 @@ class HoltWinters(BasePredictModel):
 		"""Model prediction logic
 		"""
 		self._init_starting_arrays()
+		self.Xf = []
+
 		for step in range(0, len(self.X)):
 			self.L.append(self._predict_level(step, self.alpha))
 			self.T.append(self._predict_trend(self.beta))
 			self.S.append(self._predict_seasonal(step, self.gamma))
 			#: using forecasted seasonal factor from previous period
 			self.Xf.append(self.L[-1] + self.T[-1] + self.S[-self.q])
+
+	def _optimization_start_conditions(self):
+		"""Start conditions for optimization algo: 3 coefs"""
+		initial_coefs = np.array([INITIAL_COEF] * 3)
+		boundaries = [(0, 1)] * 3
+		return initial_coefs, boundaries
+
+	def _optimization_forecast(self, params):
+		"""Performs prediction and returns error"""
+		self.alpha, self.beta, self.gamma = params
+		self._predict()
+		return self._calculate_rmse(self.X[1:], self.Xf)
+
+	def _find_coefs(self):
+		"""Automatically finds optimal coefs for model.
+		Finds optimal smooting coefs which return lowest rmse value.
+		"""
+		initial_coefs, boundaries = self._optimization_start_conditions()
+		result = fmin_l_bfgs_b(self._optimization_forecast, factr=10.0,
+		                       x0=initial_coefs, bounds=boundaries,
+		                       approx_grad=True)
+		self.alpha, self.beta, self.gamma = self._coefs = result[0]
 
