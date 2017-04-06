@@ -69,6 +69,15 @@ class HoltWinters(BasePredictModel):
 		return A * (self.X[r] - self.S[-self.q]) +\
 		       (self.E - A) * (self.L[-1] + self.T[-1])
 
+	def _predict_trend(self, B):
+		"""Calculate trend forecast for given step.
+		Last found thend value found with _predict_level value used with
+		penultimate step value.
+		:param B: beta smooting coefs matrix or value
+		:return: calculated trend matrix [max, min] value for next step
+		"""
+		return B * (self.L[-1] - self.L[-2]) + (self.E - B) * self.T[-1]
+
 	def _predict(self):
 		"""Model prediction logic
 		"""
