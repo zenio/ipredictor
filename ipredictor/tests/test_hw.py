@@ -27,11 +27,18 @@ class HWTestCase(unittest.TestCase):
 		self.assertRaises(ValueError, HoltWinters, self.dataframe,
 		                  season_period=len(self.dataframe))
 
-	def test_if_initial_arrays_properly_generated_before_predict(self):
+	def test_if_initial_level_array_properly_generated_before_predict(self):
 		self.model.predict(steps=10)
 		#: initial level is mean for 1 season
 		mean = np.mean(self.model.X[:self.season_period], axis=0)
 		self.assertEqual(self.model.L[0], mean)
+
+	def test_if_trend_array_properly_generated(self):
+		#: initial trend is pairwise  average of trend averages for two seasons
+		hw = HoltWinters(self.dataframe, season_period=2)
+		hw.predict()
+		trend_value = 0.19075
+		self.assertTrue(np.isclose(hw.T[0], trend_value, rtol=1e-03))
 
 
 
