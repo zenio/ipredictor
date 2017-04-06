@@ -10,6 +10,8 @@ class HoltWinters(BasePredictModel):
 	"""
 	Model implements Holt-Winters exponetial smoothing predict algorithm.
 	"""
+	#: identity value
+	E = 1
 
 	def __init__(self, data, season_period=SEASON_PERIOD):
 		"""
@@ -31,6 +33,7 @@ class HoltWinters(BasePredictModel):
 
 		self.L = []
 		self.T = []
+		self.S = []
 
 	def _init_level_array(self):
 		"""Fills initial values of level array"""
@@ -49,9 +52,25 @@ class HoltWinters(BasePredictModel):
 		previously calculated level value"""
 		self.S = [self.X[i] - self.L[0] for i in range(self.q)]
 
-	def _predict(self):
-		"""Model prediction logic
+	def _init_starting_arrays(self):
+		"""Helper method for initial arrays initialization
 		"""
 		self._init_level_array()
 		self._init_trend_array()
 		self._init_seasons_array()
+
+	def _predict_level(self, r, A):
+		"""Calculate level predict for given step.
+		Previous season factor used for next step level calculation.
+		:param r: step for which level is calculated
+		:param A: alpha smooting coefs matrix or value
+		:return: calculated level
+		"""
+		return A * (self.X[r] - self.S[-self.q]) +\
+		       (self.E - A) * (self.L[-1] + self.T[-1])
+
+	def _predict(self):
+		"""Model prediction logic
+		"""
+		self._init_starting_arrays()
+
