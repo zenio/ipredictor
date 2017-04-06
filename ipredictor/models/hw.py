@@ -59,14 +59,14 @@ class HoltWinters(BasePredictModel):
 		self._init_trend_array()
 		self._init_seasons_array()
 
-	def _predict_level(self, r, A):
+	def _predict_level(self, step, A):
 		"""Calculate level predict for given step.
 		Previous season factor used for next step level calculation.
-		:param r: step for which level is calculated
+		:param step: step for which level is calculated
 		:param A: alpha smooting coefs matrix or value
 		:return: calculated level
 		"""
-		return A * (self.X[r] - self.S[-self.q]) +\
+		return A * (self.X[step] - self.S[-self.q]) + \
 		       (self.E - A) * (self.L[-1] + self.T[-1])
 
 	def _predict_trend(self, B):
@@ -77,6 +77,15 @@ class HoltWinters(BasePredictModel):
 		:return: calculated trend matrix [max, min] value for next step
 		"""
 		return B * (self.L[-1] - self.L[-2]) + (self.E - B) * self.T[-1]
+
+	def _predict_seasonal(self, step, G):
+		"""Calculate seasonal factor forecast for given step
+		:param step: step for which seasonal factor is calculated
+		:param G: gamma smooting coefs matrix
+		:return: calculated seasonal matrix [max, min] value for step
+		"""
+		return G * (self.X[step] - self.L[-2] - self.T[-2]) +\
+		       (self.E - G) * self.S[-self.q]
 
 	def _predict(self):
 		"""Model prediction logic

@@ -57,6 +57,15 @@ class HWTestCase(unittest.TestCase):
 		calculated_trend = self.model._predict_trend(beta)
 		self.assertTrue(np.isclose(expected, calculated_trend, rtol=1e-03))
 
-
+	def test_if_new_seasonal_coef_value_properly_calculated(self):
+		gamma = 0.5
+		expected = -1
+		#: formula: gamma * (current_value - prev_trend - prev_level) +
+		#:              (1 - gamma) * prev_season
+		#: fake forecasts
+		self.model.L.append(0)
+		self.model.T.append(0)
+		calculated_season = self.model._predict_seasonal(0, gamma)
+		self.assertTrue(np.isclose(expected, calculated_season, rtol=1e-03))
 
 
