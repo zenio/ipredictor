@@ -8,3 +8,6 @@ DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 #: resample period identifier
 RESAMPLE_PERIOD = 'H'
+
+#: default season period is 24 hours for hourly resampled data
+SEASON_PERIOD = 24

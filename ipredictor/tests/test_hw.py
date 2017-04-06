@@ -1,6 +1,6 @@
 #: -*- coding: utf-8 -*-
 """
-Holt-Winters models tests
+Holt-Winters model tests
 """
 import unittest
 import numpy as np
@@ -13,34 +13,25 @@ from pandas import DataFrame
 POINTS_DATA_FILE = 'assets/points.csv'
 
 
-class HwModelTestCase(unittest.TestCase):
-	"""Holt-Winters exponential smooting model tests"""
+class HWTestCase(unittest.TestCase):
+	"""Holt winters model tests"""
 
 	def setUp(self):
+		self.season_period = 24
 		self.dataframe = data_reader(POINTS_DATA_FILE)
-		data_size = len(self.dataframe)
-		train_size = int(data_size * 0.8)
-		self.test_size = data_size - train_size
-		self.train = self.dataframe [0:train_size:]
-		self.test = self.dataframe[train_size:data_size:]
-		self.model = HoltWinters(self.dataframe)
+		self.model = HoltWinters(self.dataframe,
+		                         season_period=self.season_period)
 
-	def test_if_data_handled_properly(self):
-		self.assertEqual(self.model.X[0], self.dataframe['values'][0])
+	def test_if_data_length_compared_to_season_period(self):
+		#: 2 seasons of data required for proper HW model initialisation
+		self.assertRaises(ValueError, HoltWinters, self.dataframe,
+		                  season_period=len(self.dataframe))
 
-	def test_if_predict_returns_result(self):
-		predict = self.model.predict(self.test, steps=self.test_size)
-		self.assertIsInstance(predict, Prediction)
-		self.assertIsNotNone(predict.rmse)
-		self.assertIsNotNone(predict.elapsed_time)
-		self.assertIsInstance(predict.result, DataFrame)
+	def test_if_initial_arrays_properly_generated_before_predict(self):
+		self.model.predict(steps=10)
+		#: initial level is mean for 1 season
+		mean = np.mean(self.model.X[:self.season_period], axis=0)
+		self.assertEqual(self.model.L[0], mean)
 
-	def test_if_raises_error_on_when_predict_steps_greater_than_data_len(self):
-		self.assertRaises(ValueError, self.model.predict, self.test,
-		                  steps=len(self.test)+1)
 
-	def test_if_rmse_calculated(self):
-		result = self.model._calculate_rmse(np.array([0, 1]), np.array([1, 2]))
-		self.assertEqual(result, np.sqrt(2))
-		result = self.model._calculate_rmse(np.array([0, 0]), np.array([3, 3]))
-		self.assertEqual(result, np.sqrt(18))
+

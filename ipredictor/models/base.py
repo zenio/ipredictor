@@ -10,20 +10,24 @@ class BasePredictModel(object):
 	Abstarct base predict model used by other predict models
 
 	Properties:
-		X: test sample data values array
+		data: initial full dataframe
+		X: initial values array
 		Xf: predicted values array
+		steps: number of preditction steps
+		index: array of timestamps or other type of indexes
 	"""
 	__metaclass__ = ABCMeta
 
-	def __init__(self):
+	def __init__(self, data):
 		self.rmse = 0
 		self.elapsed_time = 0
-		self.Xf = pd.DataFrame()
+		self.steps = 1
+		self.data = data
+		self.X = data['values'].values
+		self.index = data.index
 
-	def predict(self, sample, steps=1):
-		if steps > len(sample):
-			raise ValueError("Predict steps should be less than test data "
-			                 "length")
+	def predict(self, steps=1):
+		self.steps = steps
 		self._predict()
 		return self._result()
 
@@ -40,7 +44,7 @@ class BasePredictModel(object):
 		Model prediction result return
 		:return: Prediction instance with result
 		"""
-		return Prediction(self.Xf, self.rmse, self.elapsed_time)
+		return Prediction(self.data, self.rmse, self.elapsed_time)
 
 	def _calculate_rmse(self, real, predicted):
 		"""Calculate and return rmse for data forecasted values
