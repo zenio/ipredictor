@@ -4,10 +4,10 @@ Base model features tests
 """
 import unittest
 import numpy as np
+import pandas as pd
 
 from ipredictor.models import HoltWinters, Prediction
 from ipredictor.tools import data_reader
-from pandas import DataFrame
 
 
 POINTS_DATA_FILE = 'assets/points.csv'
@@ -46,3 +46,6 @@ class BaseModelTestCase(unittest.TestCase):
 		self.assertIsNone(self.model.coefs)
 		self.model.predict()
 		self.assertIsNotNone(self.model.coefs)
+
+	def test_if_prediction_result_is_returned_as_prediction_model(self):
+		self.assertIsInstance(self.model.predict(), pd.DataFrame)

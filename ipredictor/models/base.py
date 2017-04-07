@@ -22,14 +22,14 @@ class BasePredictModel(object):
 	def __init__(self, data):
 		self.rmse = 0
 		self.elapsed_time = 0
-		self.steps = 1
+		self.steps = 0
 		self.data = data
 		self.X = data['values'].values
 		self.Xf = []
 		self.index = data.index
 		self._coefs = None
 
-	def predict(self, steps=1):
+	def predict(self, steps=0):
 		self.steps = steps
 		if not self._coefs:
 			self._find_coefs()
@@ -49,7 +49,8 @@ class BasePredictModel(object):
 		Model prediction result return
 		:return: Prediction instance with result
 		"""
-		return Prediction(self.data, self.rmse, self.elapsed_time)
+		prediction = self.Xf[len(self.data)-1:]
+		return pd.DataFrame.from_items([('values', prediction)])
 
 	def _calculate_rmse(self, real, predicted):
 		"""Calculate and return rmse for data forecasted values
@@ -79,6 +80,7 @@ class BasePredictModel(object):
 	def _find_coefs(self):
 		"""Automatically find optimal coefs for model"""
 		raise NotImplementedError("Please implement this method")
+
 
 class Prediction(object):
 	"""

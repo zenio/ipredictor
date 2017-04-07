@@ -117,7 +117,15 @@ class HoltWinters(BasePredictModel):
 		self._init_starting_arrays()
 		self.Xf = []
 
-		for step in range(0, len(self.X)):
+		total_loops = data_length = len(self.X)
+		#: if steps provided, then should generate future values
+		if self.steps:
+			total_loops = total_loops + self.steps - 1
+
+		for step in range(0, total_loops):
+			if step >= data_length:
+				#: synthetic previous value
+				self.X = np.append(self.X, self.Xf[-1])
 			self.L.append(self._predict_level(step, self.alpha))
 			self.T.append(self._predict_trend(self.beta))
 			self.S.append(self._predict_seasonal(step, self.gamma))

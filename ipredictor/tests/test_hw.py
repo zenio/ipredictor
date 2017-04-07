@@ -5,7 +5,7 @@ Holt-Winters model tests
 import unittest
 import numpy as np
 
-from ipredictor.models import HoltWinters, Prediction
+from ipredictor.models import HoltWinters
 from ipredictor.tools import data_reader
 from pandas import DataFrame
 
@@ -78,6 +78,13 @@ class HWTestCase(unittest.TestCase):
 		coefs = [2, 1, 1]
 		with self.assertRaises(ValueError):
 			self.model.coefs = coefs
+
+	def test_if_prediction_values_are_calculated(self):
+		steps = 10
+		result = self.model.predict(steps=steps)
+		self.assertEqual(steps, len(result))
+
+
 
 
 
