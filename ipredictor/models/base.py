@@ -24,7 +24,7 @@ class BasePredictModel(object):
 		self.elapsed_time = 0
 		self.steps = 0
 		self.data = data
-		self.X = data['values'].values
+		self.X = data['values'].values.tolist()
 		self.Xf = []
 		self.index = data.index
 		self._coefs = None

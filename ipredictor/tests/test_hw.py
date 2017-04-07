@@ -6,7 +6,6 @@ import unittest
 import numpy as np
 
 from ipredictor.models import HoltWinters
-from ipredictor.tools import data_reader
 from pandas import DataFrame
 
 
