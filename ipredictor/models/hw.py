@@ -140,7 +140,7 @@ class HoltWinters(BasePredictModel):
 
 	def _optimization_forecast(self, params):
 		"""Performs prediction and returns error"""
-		self.alpha, self.beta, self.gamma = params
+		self._retreive_coefs(params)
 		self._predict()
 		return self._calculate_rmse(self.X[1:], self.Xf)
 
@@ -152,5 +152,9 @@ class HoltWinters(BasePredictModel):
 		result = fmin_l_bfgs_b(self._optimization_forecast, factr=10.0,
 		                       x0=initial_coefs, bounds=boundaries,
 		                       approx_grad=True)
-		self.alpha, self.beta, self.gamma = self._coefs = result[0]
+		self._retreive_coefs(result[0])
+
+	def _retreive_coefs(self, coefs):
+		"""Retreives coefs found by optimization function"""
+		self.alpha, self.beta, self.gamma = self._coefs = coefs
 

@@ -82,6 +82,26 @@ class BasePredictModel(object):
 		raise NotImplementedError("Please implement this method")
 
 
+class IntervalDataMixin:
+	"""
+	This mixin used to overrides default "point-valued" functions with
+	interval-valued version
+	"""
+
+	def _calculate_rmse(self, real, predicted):
+		"""Calculate and return rmse for interval valued data
+		:param real: interval valued array
+		:param predicted: predicted interval valued array
+		:return: rmse result
+		"""
+		rmse = 0
+		for i in range(0, len(real)):
+			#: difference between previous forecast value and observed value
+			mean = real[i] - predicted[i]
+			rmse += np.dot(mean.transpose(), mean)
+		return rmse
+
+
 class Prediction(object):
 	"""
 	Model for results representation. Contains all necessary information for

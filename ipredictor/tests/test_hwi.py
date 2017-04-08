@@ -58,5 +58,25 @@ class HWITestCase(unittest.TestCase):
 		calculated_season = self.hwi._predict_seasonal(0, self.G)
 		self.assertTrue(np.array_equal(expected, calculated_season))
 
+	def test_if_predefined_coefs_are_validated(self):
+		bad = [1,2,3]
+		self.assertRaises(ValueError, self.hwi._check_initial_coefs, bad)
+		good = self.A, self.B, self.G
+		try:
+			self.hwi._check_initial_coefs(good)
+		except ValueError:
+			self.fail("Unexpected error raised")
+
+	def test_if_auto_calculated_coefs_are_matrix(self):
+		self.hwi.predict()
+		self.assertIsInstance(self.hwi.alpha, np.matrix)
+		self.assertIsInstance(self.hwi.beta, np.matrix)
+		self.assertIsInstance(self.hwi.gamma, np.matrix)
+
+	def test_if_one_step_prediction_calculated_as_it_should(self):
+		expected = np.array([[3], [2]])
+		self.hwi.coefs = self.A, self.B, self.G
+		self.hwi.predict()
+		self.assertTrue(np.array_equal(expected, self.hwi.Xf[0]))
 
 
