@@ -12,7 +12,6 @@ from ipredictor.tools import data_reader
 
 POINTS_DATA_FILE = 'assets/points.csv'
 
-
 class BaseModelTestCase(unittest.TestCase):
 	"""Base model tests"""
 
@@ -23,7 +22,7 @@ class BaseModelTestCase(unittest.TestCase):
 		self.test_size = data_size - train_size
 		self.train = self.dataframe [0:train_size:]
 		self.test = self.dataframe[train_size:data_size:]
-		self.model = HoltWinters(self.dataframe)
+		self.model = HoltWinters(self.dataframe, season_period=2)
 
 	def test_if_data_handled_properly(self):
 		self.assertEqual(self.model.X[0], self.dataframe['values'][0])

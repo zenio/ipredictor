@@ -40,3 +40,18 @@ def data_reader(filename, intervals=False, resample=None, sep=";",
 	if resample:
 		data = data.resample(resample_period).mean().interpolate(method='time')
 	return data
+
+def flats_to_matrix(flats):
+	"""Converts 12 flat coefs to 3 smooting matrix
+	:param flats: 12 coefs to be used
+	:return: 3 matrix array [alpha, beta, gamma]
+	"""
+	alphas = flats[:4]
+	betas = flats[4:8]
+	gammas = flats[8:12]
+
+	alpha = np.matrix([[alphas[0], alphas[1]], [alphas[2], alphas[3]]])
+	beta = np.matrix([[betas[0], betas[1]], [betas[2], betas[3]]])
+	gamma = np.matrix([[gammas[0], gammas[1]], [gammas[2], gammas[3]]])
+
+	return alpha, beta, gamma
