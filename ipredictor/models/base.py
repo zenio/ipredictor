@@ -1,10 +1,15 @@
 #: -*- coding: utf-8 -*-
+import logging
 import pandas as pd
 import numpy as np
 
 from abc import ABCMeta
+from datetime import datetime
 
 from ipredictor.defaults import RESAMPLE_PERIOD
+
+
+logger = logging.getLogger(__name__)
 
 
 class BasePredictModel(object):
@@ -36,10 +41,20 @@ class BasePredictModel(object):
 		self.resample_period = kwargs.get('resample_period', RESAMPLE_PERIOD)
 
 	def predict(self, steps=0):
+		start_time = datetime.now()
+		logger.debug("Started prediction routine at {}...".format(start_time))
+
 		self.steps = steps
 		if not self._coefs:
+			logger.debug("Predefined coefficients not provided. Starting "
+			             "search procedure...")
 			self._find_coefs()
 		self._predict()
+
+		end_time = datetime.now()
+		logger.debug("Ended prediction routine at {}...".format(end_time))
+		self.elapsed_time = end_time - start_time
+		logger.debug("Elapsed time: {}".format(self.elapsed_time))
 		return self._result()
 
 	def _predict(self):

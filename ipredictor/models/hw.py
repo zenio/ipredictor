@@ -1,11 +1,14 @@
 #: -*- coding: utf-8 -*-
-import itertools
+import logging
 import numpy as np
 
 from base import BasePredictModel
 
 from ipredictor.defaults import SEASON_PERIOD, INITIAL_COEF
 from scipy.optimize import fmin_l_bfgs_b
+
+
+logger = logging.getLogger(__name__)
 
 
 class HoltWinters(BasePredictModel):
@@ -154,6 +157,7 @@ class HoltWinters(BasePredictModel):
 		                       x0=initial_coefs, bounds=boundaries,
 		                       approx_grad=True)
 		self._retreive_coefs(result[0])
+		logger.debug("Optimal coefficients found: {}".format(self._coefs))
 
 	def _retreive_coefs(self, coefs):
 		"""Retreives coefs found by optimization function"""

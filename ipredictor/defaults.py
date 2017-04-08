@@ -2,6 +2,8 @@
 """
 Application default settings file
 """
+#: package name
+PACKAGE_NAME = 'ipredictor'
 
 #: data datetime format
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
