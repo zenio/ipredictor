@@ -48,7 +48,15 @@ class HWITestCase(unittest.TestCase):
 		calculated_trend = self.hwi._predict_trend(self.B)
 		self.assertTrue(np.array_equal(expected, calculated_trend))
 
-
+	def test_if_new_seasonal_factor_is_properly_calculated(self):
+		#: G is gamma 2x2 matrix
+		#: formula: G * (current_value - prev_trend - prev_level) +
+		#:              (1 - G) * prev_season
+		self.hwi.L.append(self.hwi._predict_level(0, self.A))
+		self.hwi.T.append(self.hwi._predict_trend(self.B))
+		expected = np.array([[-1.5], [-1.5]])
+		calculated_season = self.hwi._predict_seasonal(0, self.G)
+		self.assertTrue(np.array_equal(expected, calculated_season))
 
 
 
