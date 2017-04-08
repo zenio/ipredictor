@@ -40,6 +40,14 @@ class HWITestCase(unittest.TestCase):
 		calculated_level = self.hwi._predict_level(0, self.A)
 		self.assertTrue(np.array_equal(expected, calculated_level))
 
+	def test_if_new_trend_value_can_be_calculated(self):
+		#: B is beta 2x2 matrix
+		#: B * (level_change) + (1 - B) * prev_trend
+		self.hwi.L.append(self.hwi._predict_level(0, self.A))
+		expected = np.array([[0], [0]])
+		calculated_trend = self.hwi._predict_trend(self.B)
+		self.assertTrue(np.array_equal(expected, calculated_trend))
+
 
 
 
