@@ -7,7 +7,8 @@ from abc import ABCMeta
 
 class BasePredictModel(object):
 	"""
-	Abstarct base predict model used by other predict models
+	Abstract base predict model. Inherit from it in order to create your own
+	prediction model.
 
 	Properties:
 		data: initial full dataframe

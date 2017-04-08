@@ -28,8 +28,8 @@ class DataReaderTestCase(unittest.TestCase):
 
 	def test_if_can_read_intervals(self):
 		dataframe = data_reader(INTERVALS_DATA_FILE, intervals=True)
-		self.assertIn('mins', dataframe)
-		self.assertIn('maxs', dataframe)
+		self.assertIn('values', dataframe)
+		self.assertEqual(dataframe['values'].values[0].shape[1], 1)
 
 	def test_if_data_is_resampled_when_necessary(self):
 		resampled = data_reader(POINTS_DATA_FILE, resample=True)

@@ -39,6 +39,12 @@ def data_reader(filename, intervals=False, resample=None, sep=";",
 	                   parse_dates=date_parsers, index_col='datetime')
 	if resample:
 		data = data.resample(resample_period).mean().interpolate(method='time')
+
+	if intervals:
+		x = [np.array([[x], [y]]) for x,y in zip(data['maxs'], data['mins'])]
+		data['values'] = pd.Series.from_array(x, index=data.index)
+		#: remove helper columns
+		data = data.drop('mins', 1).drop('maxs', 1)
 	return data
 
 def flats_to_matrix(flats):
