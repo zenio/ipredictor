@@ -12,11 +12,12 @@ from ipredictor.tools import data_reader
 
 POINTS_DATA_FILE = 'assets/points.csv'
 
+
 class BaseModelTestCase(unittest.TestCase):
 	"""Base model tests"""
 
 	def setUp(self):
-		self.dataframe = data_reader(POINTS_DATA_FILE)
+		self.dataframe = data_reader(POINTS_DATA_FILE, resample=True)
 		data_size = len(self.dataframe)
 		train_size = int(data_size * 0.8)
 		self.test_size = data_size - train_size
@@ -48,3 +49,9 @@ class BaseModelTestCase(unittest.TestCase):
 
 	def test_if_prediction_result_is_returned_as_prediction_model(self):
 		self.assertIsInstance(self.model.predict(), pd.DataFrame)
+
+	def test_if_prediction_dataframe_index_are_extrapolated(self):
+		result = self.model.predict(steps=5)
+		diff = self.dataframe.index[1] - self.dataframe.index[0]
+		self.assertIsInstance(result.index[0], pd.Timestamp)
+		self.assertEqual(result.index[0], self.dataframe.index[-1] + diff)

@@ -4,6 +4,8 @@ import numpy as np
 
 from abc import ABCMeta
 
+from ipredictor.defaults import RESAMPLE_PERIOD
+
 
 class BasePredictModel(object):
 	"""
@@ -17,10 +19,12 @@ class BasePredictModel(object):
 		steps: number of preditction steps
 		index: array of timestamps or other type of indexes
 		coefs: coefficients, weights matrix and etc used by model logic
+
+	:param resample_period: provide if different resample period is used
 	"""
 	__metaclass__ = ABCMeta
 
-	def __init__(self, data):
+	def __init__(self, data, **kwargs):
 		self.rmse = 0
 		self.elapsed_time = 0
 		self.steps = 0
@@ -29,6 +33,7 @@ class BasePredictModel(object):
 		self.Xf = []
 		self.index = data.index
 		self._coefs = None
+		self.resample_period = kwargs.get('resample_period', RESAMPLE_PERIOD)
 
 	def predict(self, steps=0):
 		self.steps = steps
@@ -47,11 +52,20 @@ class BasePredictModel(object):
 
 	def _result(self):
 		"""
-		Model prediction result return
+		Model prediction result.
+		If data index is timestamp then future dates will be generated
 		:return: Prediction instance with result
 		"""
 		prediction = self.Xf[len(self.data)-1:]
-		return pd.DataFrame.from_items([('values', prediction)])
+		result = pd.DataFrame.from_items([('values', prediction)])
+		#: calculate future dates if necessary
+		last_index = self.index[-1]
+		if isinstance(last_index, pd.Timestamp):
+			periods = self.steps + 1 if self.steps else 2
+			dates = pd.date_range(last_index, periods=periods,
+			                      freq=self.resample_period)
+			result = result.set_index(dates[1:])
+		return result
 
 	def _calculate_rmse(self, real, predicted):
 		"""Calculate and return rmse for data forecasted values

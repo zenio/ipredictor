@@ -15,7 +15,7 @@ class HoltWinters(BasePredictModel):
 	#: identity value
 	E = 1
 
-	def __init__(self, data, season_period=SEASON_PERIOD):
+	def __init__(self, data, season_period=SEASON_PERIOD, **kwargs):
 		"""
 		Properties:
 			L: calculated level values array
@@ -26,7 +26,7 @@ class HoltWinters(BasePredictModel):
 		:param data: initial training dataframe
 		:param season_period: seasonal periodicity of data
 		"""
-		BasePredictModel.__init__(self, data)
+		BasePredictModel.__init__(self, data, **kwargs)
 
 		self.q = season_period
 		#: 2 season data needed in order to prepare initial arrays
@@ -79,6 +79,8 @@ class HoltWinters(BasePredictModel):
 	def _init_starting_arrays(self):
 		"""Helper method for initial arrays initialization
 		"""
+		self.Xf = []
+		self.X = self.data['values'].values.tolist()
 		self._init_level_array()
 		self._init_trend_array()
 		self._init_seasons_array()
@@ -115,7 +117,6 @@ class HoltWinters(BasePredictModel):
 		"""Model prediction logic
 		"""
 		self._init_starting_arrays()
-		self.Xf = []
 
 		total_loops = data_length = len(self.X)
 		#: if steps provided, then should generate future values
