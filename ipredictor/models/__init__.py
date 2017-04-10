@@ -2,6 +2,7 @@
 """
 """
 
+from base import Prediction
 from hw import HoltWinters
 from hwi import HoltWintersI
-from base import Prediction
+from ann import ANN
