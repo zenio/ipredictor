@@ -111,6 +111,13 @@ class BasePredictModel(object):
 		"""Automatically find optimal coefs for model"""
 		raise NotImplementedError("Please implement this method")
 
+	def _check_initial_coefs(self, coefs):
+		"""
+		Coeficients and weights validation logic should be implemented in
+		child classes
+		"""
+		raise NotImplementedError("Please implement this method")
+
 
 class IntervalDataMixin:
 	"""

@@ -8,13 +8,16 @@ import pandas as pd
 from ipredictor.models import ANN
 
 
+WEIGHTS_FILE = 'assets/weights.h5'
+
+
 class ANNTestCase(unittest.TestCase):
 
 	def setUp(self):
-		self.season_period = 2
-		self.values = range(1, self.season_period * 2+1)
+		self.lookback = 2
+		self.values = range(1, self.lookback * 4 + 1)
 		self.dataframe = pd.DataFrame.from_items([('values', self.values)])
-		self.model = ANN(self.dataframe)
+		self.model = ANN(self.dataframe, lookback=self.lookback)
 
 	def test_if_initial_user_data_is_scaled(self):
 		self.assertTrue(0 <= self.model.X[-1] <= 1)
@@ -23,3 +26,26 @@ class ANNTestCase(unittest.TestCase):
 		self.model.Xf = self.model.X
 		self.model._rescale_values()
 		self.assertEqual(self.model.Xf[-1], self.values[-1])
+
+	def test_if_model_validates_predefined_coefs(self):
+		bad = 'badfile.txt'
+		self.assertRaises(ValueError, self.model._check_initial_coefs, bad)
+
+		good = WEIGHTS_FILE
+		try:
+			self.model._check_initial_coefs(good)
+		except ValueError:
+			self.fail("Unexpected error raised")
+
+	def test_if_hidden_and_input_neurons_count_properly_calculated(self):
+		self.assertEqual(self.model.input_neurons, self.lookback * 2)
+		self.assertEqual(self.model.hidden_neurons, self.lookback * 4)
+
+	def test_if_trainig_data_generated_properly(self):
+		trainX = self.model.trainingX
+		trainY = self.model.trainingY
+		expected_len = len(self.values) - self.lookback
+		self.assertEqual(len(trainX), expected_len)
+		self.assertEqual(len(trainY), expected_len)
+		self.assertEqual(len(trainX[0]), self.lookback)
+		self.assertEqual(self.model.X[self.lookback], trainY[0])
