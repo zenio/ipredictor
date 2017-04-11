@@ -53,3 +53,5 @@ class ANNTestCase(unittest.TestCase):
 	def	test_if_automatically_finds_model_weights_if_not_provided(self):
 		self.model.predict()
 		self.assertIsNotNone(self.model.coefs)
+
+

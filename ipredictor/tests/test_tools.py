@@ -7,7 +7,7 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from ipredictor.tools import data_reader
+from ipredictor.tools import data_reader, validate_hdf5
 
 
 POINTS_DATA_FILE = 'assets/points.csv'
@@ -35,4 +35,13 @@ class DataReaderTestCase(unittest.TestCase):
 		resampled = data_reader(POINTS_DATA_FILE, resample=True)
 		delta =  resampled.index[1] - resampled.index[0]
 		self.assertEqual(delta.components.hours, 1)
+
+	def test_if_validates_hdf5_format(self):
+		bad = 'badfile.txt'
+		self.assertRaises(ValueError, validate_hdf5, bad)
+
+		try:
+			validate_hdf5('something.h5')
+		except ValueError:
+			self.fail("Unexpected error raised")
 

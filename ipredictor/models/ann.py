@@ -9,6 +9,7 @@ import numpy as np
 
 from sklearn.preprocessing import MinMaxScaler
 
+from ipredictor.tools import validate_hdf5
 from .base import BasePredictModel
 
 
@@ -59,8 +60,7 @@ class ANN(BasePredictModel):
 		Validate if proper weights file provided. Model weights are saved to
 		HDF5 format.
 		"""
-		if not coefs.endswith('.h5'):
-			raise ValueError("Model weights should be HDF5 format")
+		validate_hdf5(coefs)
 
 	def _build_model(self):
 		"""
@@ -100,3 +100,9 @@ class ANN(BasePredictModel):
 		"""
 		self.Xf = self.model.predict(self.trainingX)
 		self.Xf = np.array([x[0] for x in self.Xf])
+
+	def save_coefs(self, file):
+		"""
+		Saves calculated model weights to provided <file> in HDF5 format
+		"""
+		validate_hdf5(file)

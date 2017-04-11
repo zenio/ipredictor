@@ -61,3 +61,8 @@ def flats_to_matrix(flats):
 	gamma = np.matrix([[gammas[0], gammas[1]], [gammas[2], gammas[3]]])
 
 	return alpha, beta, gamma
+
+def validate_hdf5(filename):
+	""":raises ValueError: if given filename is not in HDF5 format"""
+	if not filename.endswith('.h5'):
+		raise ValueError("Model weights should be HDF5 format")
