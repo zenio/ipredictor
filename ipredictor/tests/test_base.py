@@ -12,7 +12,7 @@ from ipredictor.tools import data_reader
 
 POINTS_DATA_FILE = 'assets/points.csv'
 
-
+@unittest.skip("")
 class BaseModelTestCase(unittest.TestCase):
 	"""Base model tests"""
 

@@ -13,6 +13,14 @@ from .base import BasePredictModel
 
 
 class ANN(BasePredictModel):
+	"""
+	Prediction model based on Artificial Neural Network (ANN)
+	Simple MLP with one hidden layer.
+	Predefined weights can be provided by weights file location path.
+	If no predefined coefs provided, then model automatically will find them
+	and will set flag if weights been found.
+	Calculated coefs can be saved by calling models: <save_coefs> method.
+	"""
 
 	def __init__(self, data, lookback=1, **kwargs):
 		BasePredictModel.__init__(self, data, **kwargs)
@@ -27,9 +35,10 @@ class ANN(BasePredictModel):
 		#: is optimal and 2x input for hidden layer
 		self.hidden_neurons = self.lookback * 4
 		self.output_neurons = 1
-		self.input_neurons = self.lookback * 2
+		self.input_neurons = self.lookback
 
 		self._generate_training_set()
+		self._build_model()
 
 	def _scale_values(self):
 		"""
@@ -59,7 +68,7 @@ class ANN(BasePredictModel):
 		"""
 		self.model = Sequential()
 		self.model.add(Dense(self.hidden_neurons,
-		                     input_dim=self.hidden_neurons))
+		                     input_dim=self.input_neurons))
 		self.model.add(Dense(self.output_neurons))
 
 	def _generate_training_set(self):
@@ -73,3 +82,21 @@ class ANN(BasePredictModel):
 			dataY.append(self.X[i + self.lookback, 0])
 		self.trainingX, self.trainingY = np.array(dataX), np.array(dataY)
 
+	def _find_coefs(self):
+		"""
+		Starts training procedure and finds optimal weights for model
+		"""
+		self._coefs = None
+		self.model.compile(loss='mean_squared_error', optimizer='adam')
+		self.model.fit(self.trainingX, self.trainingY, epochs=1,
+		               batch_size=200, verbose=1)
+		#: set flag that coefs can be saved
+		self._coefs = True
+
+	def _predict(self):
+		"""
+		Prediction procedure. If predefined coefs not provided, then training
+		dataset is used.
+		"""
+		self.Xf = self.model.predict(self.trainingX)
+		self.Xf = np.array([x[0] for x in self.Xf])

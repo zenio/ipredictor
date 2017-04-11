@@ -38,7 +38,7 @@ class ANNTestCase(unittest.TestCase):
 			self.fail("Unexpected error raised")
 
 	def test_if_hidden_and_input_neurons_count_properly_calculated(self):
-		self.assertEqual(self.model.input_neurons, self.lookback * 2)
+		self.assertEqual(self.model.input_neurons, self.lookback)
 		self.assertEqual(self.model.hidden_neurons, self.lookback * 4)
 
 	def test_if_trainig_data_generated_properly(self):
@@ -49,3 +49,7 @@ class ANNTestCase(unittest.TestCase):
 		self.assertEqual(len(trainY), expected_len)
 		self.assertEqual(len(trainX[0]), self.lookback)
 		self.assertEqual(self.model.X[self.lookback], trainY[0])
+
+	def	test_if_automatically_finds_model_weights_if_not_provided(self):
+		self.model.predict()
+		self.assertIsNotNone(self.model.coefs)
