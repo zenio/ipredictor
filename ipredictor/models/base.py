@@ -71,7 +71,7 @@ class BasePredictModel(object):
 		If data index is timestamp then future dates will be generated
 		:return: Prediction instance with result
 		"""
-		prediction = self.Xf[len(self.data)-1:]
+		prediction = self._post_process_prediction()
 		result = pd.DataFrame.from_items([('values', prediction)])
 		#: calculate future dates if necessary
 		last_index = self.index[-1]
@@ -91,6 +91,10 @@ class BasePredictModel(object):
 		"""
 		return np.sqrt((sum([(m - n) ** 2 for m, n in
 		                     zip(real, predicted)])).mean())
+
+	def _post_process_prediction(self):
+		"""Post process prediction values"""
+		return self.Xf[len(self.data)-1:]
 
 	@property
 	def coefs(self):

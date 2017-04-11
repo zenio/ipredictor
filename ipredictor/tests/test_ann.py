@@ -27,15 +27,23 @@ class ANNTestCase(unittest.TestCase):
 		self.model._rescale_values()
 		self.assertEqual(self.model.Xf[-1], self.values[-1])
 
-	def test_if_model_validates_predefined_coefs(self):
+	def test_if_model_validates_and_uses_predefined_coefs(self):
 		bad = 'badfile.txt'
 		self.assertRaises(ValueError, self.model._check_initial_coefs, bad)
 
 		good = WEIGHTS_FILE
+		self.model.predict()
+		self.model.save_coefs(good)
 		try:
 			self.model._check_initial_coefs(good)
 		except ValueError:
 			self.fail("Unexpected error raised")
+
+		self.model.coefs = WEIGHTS_FILE
+		self.model.predict()
+		self.assertIsNotNone(self.model.coefs)
+		condition = self.model.coefs is not True
+		self.assertTrue(condition)
 
 	def test_if_hidden_and_input_neurons_count_properly_calculated(self):
 		self.assertEqual(self.model.input_neurons, self.lookback)
@@ -54,4 +62,10 @@ class ANNTestCase(unittest.TestCase):
 		self.model.predict()
 		self.assertIsNotNone(self.model.coefs)
 
+	def test_if_predicts_future_values_properly(self):
+		STEPS = 10
+		prediction = self.model.predict(steps=STEPS)
+		self.assertEqual(len(prediction), STEPS)
+		#: if data rescaled back
+		self.assertTrue(any([1 < x or x < 0 for x in prediction['values']]))
 

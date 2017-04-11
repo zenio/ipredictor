@@ -70,6 +70,7 @@ class ANN(BasePredictModel):
 		self.model.add(Dense(self.hidden_neurons,
 		                     input_dim=self.input_neurons))
 		self.model.add(Dense(self.output_neurons))
+		self.model.compile(loss='mean_squared_error', optimizer='adam')
 
 	def _generate_training_set(self):
 		"""
@@ -87,7 +88,6 @@ class ANN(BasePredictModel):
 		Starts training procedure and finds optimal weights for model
 		"""
 		self._coefs = None
-		self.model.compile(loss='mean_squared_error', optimizer='adam')
 		self.model.fit(self.trainingX, self.trainingY, epochs=1,
 		               batch_size=200, verbose=1)
 		#: set flag that coefs can be saved
@@ -99,10 +99,38 @@ class ANN(BasePredictModel):
 		dataset is used.
 		"""
 		self.Xf = self.model.predict(self.trainingX)
-		self.Xf = np.array([x[0] for x in self.Xf])
+		self.Xf = np.reshape(self.Xf, (len(self.Xf), ))
+
+		#: get last lookback data and predict one step ahead step by step
+		sample = self.X[-self.lookback:, 0]
+		for i in range(self.steps):
+			reshaped_sample = np.reshape(sample, (1, sample.shape[0]))
+			predicted_value = self.model.predict(reshaped_sample)
+			self.Xf = np.append(self.Xf, predicted_value[0])
+			#: use last prediction as input data
+			sample = np.delete(sample, 0, axis=0)
+			sample = np.append(sample, predicted_value)
+
+	def _post_process_prediction(self):
+		"""Overrides parent method.
+		Rescales result value to real value
+		"""
+		self._rescale_values()
+		return self.Xf[-self.steps:]
 
 	def save_coefs(self, file):
 		"""
 		Saves calculated model weights to provided <file> in HDF5 format
 		"""
 		validate_hdf5(file)
+		return self.model.save_weights(file)
+
+	@BasePredictModel.coefs.setter
+	def coefs(self, value):
+		"""Sets weights of model. Weights is filename in HDF5 format used by
+		model
+		:param value: HDF5 file path
+		"""
+		validate_hdf5(value)
+		self._coefs = value
+		#self.model.load_weights(self._coefs)
