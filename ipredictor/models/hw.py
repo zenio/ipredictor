@@ -116,14 +116,15 @@ class HoltWinters(BasePredictModel):
 		return G * (self.X[step] - self.L[-2] - self.T[-2]) +\
 		       (self.E - G) * self.S[-self.q]
 
-	def _predict(self):
+	def _predict(self, ignore_future=False):
 		"""Model prediction logic
+		:param ignore_future: if set does not forecast future values
 		"""
 		self._init_starting_arrays()
 
 		total_loops = data_length = len(self.X)
 		#: if steps provided, then should generate future values
-		if self.steps:
+		if self.steps and not ignore_future:
 			total_loops = total_loops + self.steps - 1
 
 		for step in range(0, total_loops):
@@ -145,7 +146,7 @@ class HoltWinters(BasePredictModel):
 	def _optimization_forecast(self, params):
 		"""Performs prediction and returns error"""
 		self._retreive_coefs(params)
-		self._predict()
+		self._predict(ignore_future=True)
 		return self.calculate_rmse(self.X[1:], self.Xf)
 
 	def _find_coefs(self):

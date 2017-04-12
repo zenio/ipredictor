@@ -101,7 +101,7 @@ class Hybrid(BasePredictModel):
 		real_values = self.X[1:]
 		predicted_values = np.array(linear.Xf)
 		diff = real_values - predicted_values[:len(real_values)]
-		self.estimates = pd.DataFrame().from_items([('values', diff)])
+		self.estimates = pd.DataFrame().from_items([('values', diff.tolist())])
 
 		self._predict_non_linear_component()
 		prediction = self.non_linear_predict + self.linear_predict

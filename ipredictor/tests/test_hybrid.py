@@ -44,3 +44,10 @@ class HybridTestCase(unittest.TestCase):
 		self.assertEqual(len(result), STEPS)
 		self.assertIsNotNone(self.model.estimates)
 		self.assertEqual(len(self.model.estimates), len(self.scalar_df)-1)
+
+	def test_if_can_predict_intervals(self):
+		self.model = Hybrid(self.interval_df, season_period=self.season_period)
+		STEPS = 10
+		result = self.model.predict(steps=STEPS)
+		self.assertEqual(len(result), STEPS)
+		self.assertIsInstance(result['values'][0], np.ndarray)
