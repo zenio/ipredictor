@@ -35,3 +35,12 @@ class HybridTestCase(unittest.TestCase):
 			self.model.linear_model = HoltWintersI
 		with self.assertRaises(ValueError):
 			self.model.non_linear_model = ANNI
+
+	def test_if_values_can_be_predicted(self):
+		self.model = Hybrid(self.scalar_df, season_period=self.season_period)
+		self.assertIsNone(self.model.estimates)
+		STEPS = 10
+		result = self.model.predict(steps=STEPS)
+		self.assertEqual(len(result), STEPS)
+		self.assertIsNotNone(self.model.estimates)
+		self.assertEqual(len(self.model.estimates), len(self.scalar_df)-1)
