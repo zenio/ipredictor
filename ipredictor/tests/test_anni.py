@@ -4,6 +4,7 @@ Interval-valued data prediction Artificial Neural Network model tests
 """
 import unittest
 import pandas as pd
+import numpy as np
 
 from ipredictor.models import ANNI
 
@@ -12,7 +13,8 @@ class ANNITestCase(unittest.TestCase):
 
 	def setUp(self):
 		self.lookback = 2
-		self.values = range(1, self.lookback * 4 + 1)
+		self.values = [np.array([[i+1], [i]]) for i in
+		               range(1, self.lookback * 2 + 1)]
 		self.dataframe = pd.DataFrame.from_items([('values', self.values)])
 		self.model = ANNI(self.dataframe, lookback=self.lookback)
 
@@ -20,3 +22,12 @@ class ANNITestCase(unittest.TestCase):
 		self.assertEqual(self.model.input_neurons, self.lookback * 2)
 		self.assertEqual(self.model.hidden_neurons, self.lookback * 8)
 		self.assertEqual(self.model.output_neurons, 2)
+
+	def test_if_initial_data_is_flattened(self):
+		self.assertEqual(self.model.X.shape[0], self.lookback * 4)
+		#: monkey patching for data rescale
+		self.model.Xf = self.model.X
+		self.model._rescale_values()
+		rescaled_flat = self.model.Xf
+		self.assertEqual(rescaled_flat[0], self.values[0][0])
+		self.assertEqual(rescaled_flat[1], self.values[0][1])

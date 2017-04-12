@@ -29,6 +29,7 @@ class ANN(BasePredictModel):
 		self.lookback = lookback
 		self.trainingX = self.trainingY = None
 
+		self._preprocess_values()
 		self.scaler = MinMaxScaler(feature_range=(0, 1))
 		self._scale_values()
 		self._generate_training_set()
@@ -44,6 +45,10 @@ class ANN(BasePredictModel):
 		self.input_neurons = self.lookback
 		self.hidden_neurons = self.input_neurons * 4
 		self.output_neurons = 1
+
+	def _preprocess_values(self):
+		"""Preprocess initial data if necessary"""
+		pass
 
 	def _scale_values(self):
 		"""

@@ -26,3 +26,15 @@ class ANNI(IntervalDataMixin, ANN):
 		self.input_neurons = self.lookback * 2
 		self.hidden_neurons = self.input_neurons * 4
 		self.output_neurons = 2
+
+	def _preprocess_values(self):
+		"""
+		Interval-valued data should be flattened because MLP doesn't support
+		complex inputs
+		[[2,1],[3,2]] -> [2,1,3,2]
+		"""
+		mixed = []
+		for i in range(len(self.X)):
+			mixed.append(self.X[i][0])
+			mixed.append(self.X[i][1])
+		self.X = np.array(mixed)
