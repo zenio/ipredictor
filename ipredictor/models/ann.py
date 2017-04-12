@@ -31,15 +31,19 @@ class ANN(BasePredictModel):
 
 		self.scaler = MinMaxScaler(feature_range=(0, 1))
 		self._scale_values()
-
-		#: experimentally found that for time series 2 season lookback
-		#: is optimal and 2x input for hidden layer
-		self.hidden_neurons = self.lookback * 4
-		self.output_neurons = 1
-		self.input_neurons = self.lookback
-
 		self._generate_training_set()
+
+		self._configure_neurons()
 		self._build_model()
+
+	def _configure_neurons(self):
+		"""Configures MLP neurons amount
+		Experimentally found that for time series 2 season lookback
+		is optimal and 4x input for hidden layer
+		"""
+		self.input_neurons = self.lookback
+		self.hidden_neurons = self.input_neurons * 4
+		self.output_neurons = 1
 
 	def _scale_values(self):
 		"""
