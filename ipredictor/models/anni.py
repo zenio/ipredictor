@@ -38,3 +38,15 @@ class ANNI(IntervalDataMixin, ANN):
 			mixed.append(self.X[i][0])
 			mixed.append(self.X[i][1])
 		self.X = np.array(mixed)
+
+	def _generate_training_set(self):
+		"""
+		Training set generator. Train input flattened interval values, output
+		is predicted interval
+		"""
+		dataX, dataY = [], []
+		for i in range(0, len(self.X)-self.lookback*2, 2):
+			shift = i + self.lookback * 2
+			dataX.append(self.X[i:shift, 0])
+			dataY.append(self.X[shift : shift+2 , 0])
+		self.trainingX, self.trainingY = np.array(dataX), np.array(dataY)

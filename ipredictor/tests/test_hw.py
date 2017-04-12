@@ -11,7 +11,7 @@ from pandas import DataFrame
 
 POINTS_DATA_FILE = 'assets/points.csv'
 
-@unittest.skip("")
+
 class HWTestCase(unittest.TestCase):
 	"""Holt winters model tests"""
 
