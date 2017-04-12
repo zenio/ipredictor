@@ -29,6 +29,8 @@ class BasePredictModel(object):
 	"""
 	__metaclass__ = ABCMeta
 
+	is_intervals = False
+
 	def __init__(self, data, **kwargs):
 		self.rmse = 0
 		self.elapsed_time = 0
@@ -82,7 +84,7 @@ class BasePredictModel(object):
 			result = result.set_index(dates[1:])
 		return result
 
-	def _calculate_rmse(self, real, predicted):
+	def calculate_rmse(self, real, predicted):
 		"""Calculate and return rmse for data forecasted values
 		:param real: test values array
 		:param predicted: predicted values array
@@ -128,8 +130,9 @@ class IntervalDataMixin:
 	This mixin used to overrides default "point-valued" functions with
 	interval-valued version
 	"""
+	is_intervals = True
 
-	def _calculate_rmse(self, real, predicted):
+	def calculate_rmse(self, real, predicted):
 		"""Calculate and return rmse for interval valued data
 		:param real: interval valued array
 		:param predicted: predicted interval valued array

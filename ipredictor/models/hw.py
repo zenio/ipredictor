@@ -146,7 +146,7 @@ class HoltWinters(BasePredictModel):
 		"""Performs prediction and returns error"""
 		self._retreive_coefs(params)
 		self._predict()
-		return self._calculate_rmse(self.X[1:], self.Xf)
+		return self.calculate_rmse(self.X[1:], self.Xf)
 
 	def _find_coefs(self):
 		"""Automatically finds optimal coefs for model.

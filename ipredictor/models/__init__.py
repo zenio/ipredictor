@@ -7,3 +7,4 @@ from hw import HoltWinters
 from hwi import HoltWintersI
 from ann import ANN
 from anni import ANNI
+from hybrid import Hybrid
