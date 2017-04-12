@@ -50,3 +50,27 @@ class ANNI(IntervalDataMixin, ANN):
 			dataX.append(self.X[i:shift, 0])
 			dataY.append(self.X[shift : shift+2 , 0])
 		self.trainingX, self.trainingY = np.array(dataX), np.array(dataY)
+
+	def _predict(self):
+		"""
+		Prediction procedure. Xf after prediction contain interval-valued
+		results for each sample. The goal is to create new sample on base
+		of prediction and predict once more.
+		"""
+		self.Xf = self.model.predict(self.trainingX)
+
+		#: get last lookback data and predict one step ahead step by step
+		sample = self.X[-self.lookback * 2:, 0]
+		for i in range(self.steps):
+			reshaped_sample = np.reshape(sample, (1, sample.shape[0]))
+			predicted_value = self.model.predict(reshaped_sample)
+			self.Xf = np.append(self.Xf, predicted_value, axis=0)
+			#: use last prediction as input data
+			sample = np.delete(sample, [0,1], axis=0)
+			sample = np.append(sample, predicted_value[0])
+
+	def _post_process_prediction(self):
+		"""Generate intervals back"""
+		self._rescale_values()
+		self.Xf = [np.array([[x[0]], [x[1]]]) for x in self.Xf]
+		return self.Xf[-self.steps:]

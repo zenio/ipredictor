@@ -33,7 +33,6 @@ class ANNTestCase(unittest.TestCase):
 
 		good = WEIGHTS_FILE
 		self.model.predict()
-		self.model.save_coefs(good)
 		try:
 			self.model._check_initial_coefs(good)
 		except ValueError:

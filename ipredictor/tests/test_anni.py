@@ -38,3 +38,9 @@ class ANNITestCase(unittest.TestCase):
 		trainY = self.model.trainingY
 		self.assertEqual(len(trainX[0]), self.lookback * 2)
 		self.assertEqual(len(trainY), len(self.values) - self.lookback)
+
+	def test_if_can_predict_proper_values(self):
+		STEPS = 5
+		prediction = self.model.predict(steps=STEPS)
+		self.assertEqual(len(prediction), STEPS)
+		self.assertEqual(prediction['values'][0].shape, (2,1))
