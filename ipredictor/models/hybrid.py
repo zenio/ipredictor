@@ -12,7 +12,7 @@ import numpy as np
 
 from ipredictor.models import HoltWinters, HoltWintersI, ANN, ANNI
 from ipredictor.defaults import TRAIN_EPOCHS
-from .base import BasePredictModel
+from .base import BasePredictModel, IntervalDataMixin
 
 
 class Hybrid(BasePredictModel):
@@ -114,3 +114,5 @@ class Hybrid(BasePredictModel):
 		"""Post process prediction values. Just retrun result"""
 		return self.Xf
 
+class HybridI(IntervalDataMixin, Hybrid):
+	pass

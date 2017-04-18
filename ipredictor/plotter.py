@@ -67,13 +67,14 @@ class Plotter:
 		self.ax.bar(data.index, bars, 0.015, heights, alpha=0.2, label=label,
 		            color=color, edgecolor=color)
 
-	def show(self):
+	def prepare(self):
 		"""
-		Plots customized graph
+		Prepares customized graph
 		"""
 		self.ax.legend(loc=3, prop={'size':10})
 		self.fig.autofmt_xdate()
 		plt.xlabel(self.xlabel)
 		plt.ylabel(self.ylabel)
 		plt.title(self.title)
-		plt.show()
+		return plt
+

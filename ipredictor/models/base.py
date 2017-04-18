@@ -41,6 +41,9 @@ class BasePredictModel(object):
 		self._coefs = None
 		self.resample_period = kwargs.get('resample_period', RESAMPLE_PERIOD)
 
+	def __repr__(self):
+		return self.__class__.__name__
+
 	def predict(self, steps=0):
 		start_time = datetime.now()
 		logger.debug("Started prediction routine at {}...".format(start_time))
