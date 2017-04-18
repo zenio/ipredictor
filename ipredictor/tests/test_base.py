@@ -31,9 +31,9 @@ class BaseModelTestCase(unittest.TestCase):
 		self.assertEqual(self.model.index[0], self.dataframe.index[0])
 
 	def test_if_rmse_calculated(self):
-		result = self.model.calculate_rmse(np.array([0, 1]), np.array([1, 2]))
+		result = HoltWinters.rmse(np.array([0, 1]), np.array([1, 2]))
 		self.assertEqual(result, np.sqrt(2))
-		result = self.model.calculate_rmse(np.array([0, 0]), np.array([3, 3]))
+		result = HoltWinters.rmse(np.array([0, 0]), np.array([3, 3]))
 		self.assertEqual(result, np.sqrt(18))
 
 	def test_if_can_provide_own_predefined_weights(self):

@@ -79,4 +79,11 @@ class HWITestCase(unittest.TestCase):
 		self.hwi.predict()
 		self.assertTrue(np.array_equal(expected, self.hwi.Xf[0]))
 
+	def test_if_rmse_can_be_calculated(self):
+		result = self.hwi.predict(steps=4)
+		try:
+			HoltWintersI.rmse(self.dataframe['values'], result['values'])
+		except ValueError:
+			self.fail("Unexpected error raised")
+
 

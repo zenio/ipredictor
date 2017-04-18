@@ -32,7 +32,6 @@ class BasePredictModel(object):
 	is_intervals = False
 
 	def __init__(self, data, **kwargs):
-		self.rmse = 0
 		self.elapsed_time = 0
 		self.steps = 0
 		self.data = data
@@ -84,13 +83,19 @@ class BasePredictModel(object):
 			result = result.set_index(dates[1:])
 		return result
 
-	def calculate_rmse(self, real, predicted):
+	@staticmethod
+	def rmse(real, predicted):
 		"""Calculate and return rmse for data forecasted values
 		:param real: test values array
 		:param predicted: predicted values array
 
 		:return: rmse value
 		"""
+		try:
+			#: test if data is dataset and retreive values if true
+			real, predicted = real['values'], predicted['values']
+		except:
+			pass
 		return np.sqrt((sum([(m - n) ** 2 for m, n in
 		                     zip(real, predicted)])).mean())
 
@@ -132,18 +137,25 @@ class IntervalDataMixin:
 	"""
 	is_intervals = True
 
-	def calculate_rmse(self, real, predicted):
+	@staticmethod
+	def rmse(real, predicted):
 		"""Calculate and return rmse for interval valued data
 		:param real: interval valued array
 		:param predicted: predicted interval valued array
 		:return: rmse result
 		"""
-		rmse = 0
+		try:
+			#: test if data is dataset and retreive values if true
+			real, predicted = real['values'], predicted['values']
+		except:
+			pass
+
+		error = 0
 		for i in range(0, len(real)):
 			#: difference between previous forecast value and observed value
 			mean = real[i] - predicted[i]
-			rmse += np.dot(mean.transpose(), mean)
-		return rmse
+			error += np.dot(mean.transpose(), mean)
+		return error
 
 
 class Prediction(object):

@@ -135,7 +135,7 @@ class HoltWinters(BasePredictModel):
 			self.T.append(self._predict_trend(self.beta))
 			self.S.append(self._predict_seasonal(step, self.gamma))
 			#: using forecasted seasonal factor from previous period
-			self.Xf.append(self.L[-1] + self.T[-1] + self.S[-self.q])
+			self.Xf.append(np.array(self.L[-1] + self.T[-1] + self.S[-self.q]))
 
 	def _optimization_start_conditions(self):
 		"""Start conditions for optimization algo: 3 coefs"""
@@ -147,7 +147,7 @@ class HoltWinters(BasePredictModel):
 		"""Performs prediction and returns error"""
 		self._retreive_coefs(params)
 		self._predict(ignore_future=True)
-		return self.calculate_rmse(self.X[1:], self.Xf)
+		return self.rmse(self.X[1:], self.Xf)
 
 	def _find_coefs(self):
 		"""Automatically finds optimal coefs for model.
