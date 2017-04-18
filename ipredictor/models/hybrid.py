@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 
 from ipredictor.models import HoltWinters, HoltWintersI, ANN, ANNI
+from ipredictor.defaults import TRAIN_EPOCHS
 from .base import BasePredictModel
 
 
@@ -28,7 +29,7 @@ class Hybrid(BasePredictModel):
 
 		self.season_period = season_period
 		#: non linear model will lookup for last two seasons of data
-		self.lookback = self.season_period * 2
+		self.lookback = self.season_period
 
 		#: by default this models used, if u want to change use setter
 		self.is_intervals = False
@@ -86,7 +87,8 @@ class Hybrid(BasePredictModel):
 	def _predict_non_linear_component(self):
 		"""Predicts non linear component"""
 		non_linear = self._non_linear_model(self.estimates,
-		                                    lookback=self.lookback)
+		                                    lookback=self.lookback,
+		                                    train_epochs=TRAIN_EPOCHS)
 		self.non_linear_predict = non_linear.predict(steps=self.steps)
 		return non_linear
 

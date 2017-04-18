@@ -10,6 +10,7 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 
 from ipredictor.tools import validate_hdf5
+from ipredictor.defaults import TRAIN_EPOCHS
 from .base import BasePredictModel
 
 
@@ -23,10 +24,11 @@ class ANN(BasePredictModel):
 	Calculated coefs can be saved by calling models: <save_coefs> method.
 	"""
 
-	def __init__(self, data, lookback=1, **kwargs):
+	def __init__(self, data, lookback=1, train_epochs=TRAIN_EPOCHS, **kwargs):
 		BasePredictModel.__init__(self, data, **kwargs)
 
 		self.lookback = lookback
+		self.train_epochs = train_epochs
 		self.trainingX = self.trainingY = None
 
 		self._preprocess_values()
@@ -97,8 +99,8 @@ class ANN(BasePredictModel):
 		Starts training procedure and finds optimal weights for model
 		"""
 		self._coefs = None
-		self.model.fit(self.trainingX, self.trainingY, epochs=1,
-		               batch_size=200, verbose=1)
+		self.model.fit(self.trainingX, self.trainingY, batch_size=100,
+		               epochs=self.train_epochs, verbose=1)
 		#: set flag that coefs can be saved
 		self._coefs = True
 

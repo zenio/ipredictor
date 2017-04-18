@@ -153,10 +153,13 @@ class HoltWinters(BasePredictModel):
 		"""Automatically finds optimal coefs for model.
 		Finds optimal smooting coefs which return lowest rmse value.
 		"""
+		log_level = logging.getLogger().getEffectiveLevel()
+		iprint = 1 if log_level == logging.DEBUG else -1
+
 		initial_coefs, boundaries = self._optimization_start_conditions()
 		result = fmin_l_bfgs_b(self._optimization_forecast, factr=10.0,
 		                       x0=initial_coefs, bounds=boundaries,
-		                       approx_grad=True)
+		                       approx_grad=True, iprint=iprint)
 		self._retreive_coefs(result[0])
 		logger.debug("Optimal coefficients found: {}".format(self._coefs))
 
