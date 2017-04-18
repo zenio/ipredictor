@@ -19,3 +19,6 @@ INITIAL_COEF = 0.1
 
 #: default ANN train epochs
 TRAIN_EPOCHS = 1
+
+#: default batch size
+BATCH_SIZE = 100

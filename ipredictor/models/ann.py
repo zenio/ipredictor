@@ -10,7 +10,7 @@ import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 
 from ipredictor.tools import validate_hdf5
-from ipredictor.defaults import TRAIN_EPOCHS
+from ipredictor.defaults import TRAIN_EPOCHS, BATCH_SIZE
 from .base import BasePredictModel
 
 
@@ -99,7 +99,7 @@ class ANN(BasePredictModel):
 		Starts training procedure and finds optimal weights for model
 		"""
 		self._coefs = None
-		self.model.fit(self.trainingX, self.trainingY, batch_size=100,
+		self.model.fit(self.trainingX, self.trainingY, batch_size=BATCH_SIZE,
 		               epochs=self.train_epochs, verbose=1)
 		#: set flag that coefs can be saved
 		self._coefs = True

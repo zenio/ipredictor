@@ -30,6 +30,8 @@ class Hybrid(BasePredictModel):
 		self.season_period = season_period
 		#: non linear model will lookup for last two seasons of data
 		self.lookback = self.season_period
+		#: train epochs for nonlinear model
+		self.train_epochs = kwargs.get('train_epochs', TRAIN_EPOCHS)
 
 		#: by default this models used, if u want to change use setter
 		self.is_intervals = False
@@ -88,7 +90,7 @@ class Hybrid(BasePredictModel):
 		"""Predicts non linear component"""
 		non_linear = self._non_linear_model(self.estimates,
 		                                    lookback=self.lookback,
-		                                    train_epochs=TRAIN_EPOCHS)
+		                                    train_epochs=self.train_epochs)
 		self.non_linear_predict = non_linear.predict(steps=self.steps)
 		return non_linear
 

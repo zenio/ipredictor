@@ -160,7 +160,7 @@ class IntervalDataMixin:
 			#: difference between previous forecast value and observed value
 			mean = real[i] - predicted[i]
 			error += np.dot(mean.transpose(), mean)
-		return error
+		return error[0][0]
 
 
 class Prediction(object):
