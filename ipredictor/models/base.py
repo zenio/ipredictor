@@ -146,7 +146,9 @@ class IntervalDataMixin:
 		"""
 		try:
 			#: test if data is dataset and retreive values if true
-			real, predicted = real['values'], predicted['values']
+			real = real['values'].values
+			#predicted = predicted['values']
+			predicted = predicted['values'].values
 		except:
 			pass
 
