@@ -1,4 +1,6 @@
 #: -*- coding: utf-8 -*-
+from __future__ import division
+
 import logging
 import pandas as pd
 import numpy as np
@@ -104,7 +106,7 @@ class BasePredictModel(object):
 
 	def _post_process_prediction(self):
 		"""Post process prediction values"""
-		return self.Xf[len(self.data)-1:]
+		return self.Xf[-self.steps:]
 
 	@property
 	def coefs(self):
@@ -159,9 +161,8 @@ class IntervalDataMixin:
 		for i in range(0, len(real)):
 			#: difference between previous forecast value and observed value
 			mean = real[i] - predicted[i]
-			error += np.dot(mean.transpose(), mean)
-		return error[0][0]
-
+			error += np.dot(mean.transpose(), mean)[0][0]
+		return error
 
 class Prediction(object):
 	"""

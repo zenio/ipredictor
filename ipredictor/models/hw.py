@@ -1,4 +1,6 @@
 #: -*- coding: utf-8 -*-
+from __future__ import division
+
 import logging
 import numpy as np
 
@@ -157,8 +159,8 @@ class HoltWinters(BasePredictModel):
 		iprint = 1 if log_level == logging.DEBUG else -1
 
 		initial_coefs, boundaries = self._optimization_start_conditions()
-		result = fmin_l_bfgs_b(self._optimization_forecast, factr=10.0,
-		                       x0=initial_coefs, bounds=boundaries,
+		result = fmin_l_bfgs_b(self._optimization_forecast,
+		                       x0=initial_coefs, bounds=boundaries, factr=1e10,
 		                       approx_grad=True, iprint=iprint)
 		self._retreive_coefs(result[0])
 		logger.debug("Optimal coefficients found: {}".format(self._coefs))

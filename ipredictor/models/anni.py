@@ -24,7 +24,7 @@ class ANNI(IntervalDataMixin, ANN):
 		Output neurons amount is 2: for miniumum and maximum value of interal
 		"""
 		self.input_neurons = self.lookback * 2
-		self.hidden_neurons = self.input_neurons * 4
+		self.hidden_neurons = self.input_neurons * 2
 		self.output_neurons = 2
 
 	def _preprocess_values(self):

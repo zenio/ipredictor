@@ -21,7 +21,7 @@ class ANNITestCase(unittest.TestCase):
 
 	def test_if_neurons_amount_properly_configured(self):
 		self.assertEqual(self.model.input_neurons, self.lookback * 2)
-		self.assertEqual(self.model.hidden_neurons, self.lookback * 8)
+		self.assertEqual(self.model.hidden_neurons, self.lookback * 4)
 		self.assertEqual(self.model.output_neurons, 2)
 
 	def test_if_initial_data_is_flattened(self):

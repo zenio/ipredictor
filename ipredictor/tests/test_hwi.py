@@ -2,6 +2,8 @@
 """
 Holt-Winters interval-valued modification model tests
 """
+from __future__ import division
+
 import unittest
 import numpy as np
 
@@ -86,4 +88,9 @@ class HWITestCase(unittest.TestCase):
 		except ValueError:
 			self.fail("Unexpected error raised")
 
+	def test_if_rmse_properly_calculated(self):
+		real = [np.array([[4], [3]])]
+		predicted = [np.array([[2], [1]])]
+		rmse = HoltWintersI.rmse(real, predicted)
+		self.assertEqual(rmse, 8)
 

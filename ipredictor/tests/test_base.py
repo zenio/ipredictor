@@ -42,14 +42,6 @@ class BaseModelTestCase(unittest.TestCase):
 		self.model.coefs = coefs
 		self.assertSequenceEqual(self.model.coefs, coefs)
 
-	def test_if_coefs_automatically_been_calculated_if_not_provided(self):
-		self.assertIsNone(self.model.coefs)
-		self.model.predict()
-		self.assertIsNotNone(self.model.coefs)
-
-	def test_if_prediction_result_is_returned_as_prediction_model(self):
-		self.assertIsInstance(self.model.predict(), pd.DataFrame)
-
 	def test_if_prediction_dataframe_index_are_extrapolated(self):
 		result = self.model.predict(steps=5)
 		diff = self.dataframe.index[1] - self.dataframe.index[0]
