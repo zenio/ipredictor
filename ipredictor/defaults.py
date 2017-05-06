@@ -15,7 +15,7 @@ RESAMPLE_PERIOD = 'H'
 SEASON_PERIOD = 24
 
 #: start coefs for optimization routines
-INITIAL_COEF = 0.1
+INITIAL_COEF = 0.2
 
 #: default ANN train epochs
 TRAIN_EPOCHS = 1

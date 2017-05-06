@@ -40,7 +40,7 @@ class Plotter:
 		:param data: interval-valued or scalar dataframe
 		:param label: name of dataframe
 		"""
-		if isinstance(data['values'].iloc[0], np.ndarray):
+		if isinstance(data['values'].iloc[0], (np.ndarray, list)):
 			self._draw_intervals(data, **kwargs)
 		else:
 			self._draw_points(data, **kwargs)

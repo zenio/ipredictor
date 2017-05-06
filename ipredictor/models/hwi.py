@@ -46,7 +46,7 @@ class HoltWintersI(IntervalDataMixin, HoltWinters):
 		"""Override parents method that generates start conditions for
 		optimization algorithm
 		"""
-		initial_values = np.array([INITIAL_COEF] * 12)
+		initial_values = np.array([0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1])
 		boundaries = [(0, 1)] * 12
 		return initial_values, boundaries
 

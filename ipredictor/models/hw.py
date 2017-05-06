@@ -77,8 +77,14 @@ class HoltWinters(BasePredictModel):
 		               for i in range(self.q)]) / (self.q ** 2)]
 
 	def _init_seasons_array(self):
-		"""Seasons array is calculated from first season of provided data and
-		previously calculated level value"""
+		"""Seasons array is average of level changes for first two seasons"""
+		x = [self.X[i] - self.L[0] for i in range(self.q)]
+		second_season_level = np.mean(self.X[self.q:self.q*2], axis=0)
+		y = [self.X[self.q + i] - second_season_level  for i in range(self.q)]
+
+		self.S = []
+		for i in range(len(x)):
+			self.S.append((x[i] + y[i]) / 2)
 		self.S = [self.X[i] - self.L[0] for i in range(self.q)]
 
 	def _init_starting_arrays(self):
@@ -160,8 +166,9 @@ class HoltWinters(BasePredictModel):
 
 		initial_coefs, boundaries = self._optimization_start_conditions()
 		result = fmin_l_bfgs_b(self._optimization_forecast,
-		                       x0=initial_coefs, bounds=boundaries, factr=1e10,
-		                       approx_grad=True, iprint=iprint)
+		                       x0=initial_coefs, bounds=boundaries,
+		                       approx_grad=True, iprint=iprint,
+		                       epsilon=1e-2)
 		self._retreive_coefs(result[0])
 		logger.debug("Optimal coefficients found: {}".format(self._coefs))
 

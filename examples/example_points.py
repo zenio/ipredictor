@@ -18,4 +18,5 @@ if __name__ == "__main__":
 	plotter.add(train, color='b')
 	plotter.add(test, color='g')
 	plotter.add(prediction, color='r')
-	plotter.show()
+	plot = plotter.prepare()
+	plot.show()
