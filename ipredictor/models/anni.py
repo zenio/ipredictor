@@ -51,6 +51,14 @@ class ANNI(IntervalDataMixin, ANN):
 			dataY.append(self.X[shift : shift+2 , 0])
 		self.trainingX, self.trainingY = np.array(dataX), np.array(dataY)
 
+	def _reshape_sample(self, sample):
+		"""
+		Helper method that reshapes given data array into ANN accetable form
+		:param sample: data sample
+		:return: reshaped array
+		"""
+		return np.reshape(sample, (1, sample.shape[0]))
+
 	def _predict(self):
 		"""
 		Prediction procedure. Xf after prediction contain interval-valued
@@ -62,8 +70,7 @@ class ANNI(IntervalDataMixin, ANN):
 		#: get last lookback data and predict one step ahead step by step
 		sample = self.X[-self.lookback * 2:, 0]
 		for i in range(self.steps):
-			reshaped_sample = np.reshape(sample, (1, sample.shape[0]))
-			predicted_value = self.model.predict(reshaped_sample)
+			predicted_value = self.model.predict(self._reshape_sample(sample))
 			self.Xf = np.append(self.Xf, predicted_value, axis=0)
 			#: use last prediction as input data
 			sample = np.delete(sample, [0,1], axis=0)
