@@ -73,8 +73,30 @@ class Plotter:
 		"""
 		self.ax.legend(loc=3, prop={'size':10})
 		self.fig.autofmt_xdate()
-		plt.xlabel(self.xlabel)
-		plt.ylabel(self.ylabel)
-		plt.title(self.title)
-		return plt
+		self.ax.set_xlabel(self.xlabel)
+		self.ax.set_ylabel(self.ylabel)
+		self.ax.set_title(self.title)
 
+	def show(self):
+		"""Shows prepared figure"""
+		plt.show()
+
+	def save(self, name):
+		"""Saves prepared figure
+		:param name: imange name and path where image is saved
+		"""
+		plt.ioff()
+		self.fig.savefig(name, dpi=200, figsize=(20,10))
+
+	def add_table(self, cols, labels):
+		"""Adds one row information table on top side of figure
+		:param cols: table columns data
+		:labels: table header labels
+		"""
+		#: no need in title when table used
+		self.ax.set_title(self.title)
+		self.ax.table(cellText=[cols], colLabels=labels, loc='top')
+
+	def __del__(self):
+		"""Clean figure"""
+		plt.close(self.fig)
