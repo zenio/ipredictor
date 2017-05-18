@@ -8,4 +8,5 @@ from hwi import HoltWintersI
 from ann import ANN
 from anni import ANNI
 from hybrid import Hybrid, HybridI
-from lstm import LSTMI
+from lstmi import LSTMI
+from holti import HoltI

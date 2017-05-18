@@ -20,7 +20,7 @@ class HoltWinters(BasePredictModel):
 	#: identity value
 	E = 1
 
-	def __init__(self, data, season_period=SEASON_PERIOD, **kwargs):
+	def __init__(self, data, **kwargs):
 		"""
 		Properties:
 			L: calculated level values array
@@ -33,15 +33,20 @@ class HoltWinters(BasePredictModel):
 		"""
 		BasePredictModel.__init__(self, data, **kwargs)
 
-		self.q = season_period
-		#: 2 season data needed in order to prepare initial arrays
-		if len(data) < 2 * self.q:
-			raise ValueError
+		self.q = kwargs.get('season_period', SEASON_PERIOD)
+		self._check_initials()
 
 		self.L = []
 		self.T = []
 		self.S = []
 		self.alpha = self.beta = self.gamma = None
+
+	def _check_initials(self):
+		"""User provied data length check
+		"""
+		#: 2 season data needed in order to prepare initial arrays
+		if len(self.data) < 2 * self.q:
+			raise ValueError("At least 2 season of data should be provided")
 
 	@BasePredictModel.coefs.setter
 	def coefs(self, value):
@@ -49,7 +54,7 @@ class HoltWinters(BasePredictModel):
 		coefs are properly set
 		"""
 		self._check_initial_coefs(value)
-		self.alpha, self.beta, self.gamma = self._coefs = value
+		self._extract_coefs(value)
 
 	def _check_initial_coefs(self, coefs):
 		"""Set up initial coefficients
@@ -63,6 +68,10 @@ class HoltWinters(BasePredictModel):
 		        beta is not None  and (beta > 1 or beta < 0),
 		        gamma is not None and (gamma > 1 or gamma < 0)]):
 			raise ValueError(u"Given coef values should be in range [0;1]")
+
+	def _extract_coefs(self, coefs):
+		"""Unpacks coefs array into separate coefs matrixes"""
+		self.alpha, self.beta, self.gamma = self._coefs = coefs
 
 	def _init_level_array(self):
 		"""Fills initial values of level array"""
@@ -138,7 +147,7 @@ class HoltWinters(BasePredictModel):
 		for step in range(0, total_loops):
 			if step >= data_length:
 				#: synthetic previous value
-				self.X = np.append(self.X, self.Xf[-1])
+				self.X.append(self.Xf[-1])
 			self.L.append(self._predict_level(step, self.alpha))
 			self.T.append(self._predict_trend(self.beta))
 			self.S.append(self._predict_seasonal(step, self.gamma))
@@ -153,7 +162,7 @@ class HoltWinters(BasePredictModel):
 
 	def _optimization_forecast(self, params):
 		"""Performs prediction and returns error"""
-		self._retreive_coefs(params)
+		self._extract_coefs(params)
 		self._predict(ignore_future=True)
 		return self.rmse(self.X[1:], self.Xf)
 
@@ -169,10 +178,6 @@ class HoltWinters(BasePredictModel):
 		                       x0=initial_coefs, bounds=boundaries,
 		                       approx_grad=True, iprint=iprint,
 		                       epsilon=1e-2)
-		self._retreive_coefs(result[0])
+		self._extract_coefs(result[0])
 		logger.debug("Optimal coefficients found: {}".format(self._coefs))
-
-	def _retreive_coefs(self, coefs):
-		"""Retreives coefs found by optimization function"""
-		self.alpha, self.beta, self.gamma = self._coefs = coefs
 

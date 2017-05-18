@@ -23,7 +23,8 @@ class HWITestCase(unittest.TestCase):
 		self.hwi = HoltWintersI(self.dataframe,
 		                        season_period=self.season_period)
 		self.hwi._init_starting_arrays()
-		self.A, self.B, self.G = flats_to_matrix([0.5] * 12)
+		self.coefs = [0.5] * 12
+		self.A, self.B, self.G = flats_to_matrix(self.coefs)
 
 	def test_if_initial_arrays_properly_generated_before_predict(self):
 		#: level
@@ -61,9 +62,9 @@ class HWITestCase(unittest.TestCase):
 		self.assertTrue(np.array_equal(expected, calculated_season))
 
 	def test_if_predefined_coefs_are_validated(self):
-		bad = [1,2,3]
+		bad = [1,2,3,4]*3
 		self.assertRaises(ValueError, self.hwi._check_initial_coefs, bad)
-		good = self.A, self.B, self.G
+		good = self.coefs
 		try:
 			self.hwi._check_initial_coefs(good)
 		except ValueError:
@@ -77,7 +78,7 @@ class HWITestCase(unittest.TestCase):
 
 	def test_if_one_step_prediction_calculated_as_it_should(self):
 		expected = np.array([[3], [2]])
-		self.hwi.coefs = self.A, self.B, self.G
+		self.hwi.coefs = self.coefs
 		self.hwi.predict()
 		self.assertTrue(np.array_equal(expected, self.hwi.Xf[0]))
 

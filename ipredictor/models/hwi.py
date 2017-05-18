@@ -21,7 +21,7 @@ class HoltWintersI(IntervalDataMixin, HoltWinters):
 		:param coefs: list of coefs matrix [alpha, beta, gamma]
 		:raises ValueError: if given coefs negative or greater that 1
 		"""
-		alpha, beta, gamma = coefs
+		alpha, beta, gamma = flats_to_matrix(coefs)
 
 		if any([alpha is not None and not isinstance(alpha, np.matrix),
 		        beta is not None and not isinstance(beta, np.matrix),
@@ -29,14 +29,17 @@ class HoltWintersI(IntervalDataMixin, HoltWinters):
 			raise ValueError(u"Given coef matrix should be instance of "
 			                 u"np.matrix")
 
-		if any([not self.__is_correct_coefs_matrix(alpha),
-		        not self.__is_correct_coefs_matrix(alpha),
-		        not self.__is_correct_coefs_matrix(alpha)]):
+		if any([not self._is_correct_coefs_matrix(alpha),
+		        not self._is_correct_coefs_matrix(alpha),
+		        not self._is_correct_coefs_matrix(alpha)]):
 			raise ValueError(u"All given matrix coefs values should be in "
 			                 u"range [0;1]")
 
+	def _extract_coefs(self, coefs):
+		"""Overriden coefs retreive function found by optimization algorithm"""
+		self.alpha, self.beta, self.gamma = self._coefs =flats_to_matrix(coefs)
 
-	def __is_correct_coefs_matrix(self, matrix):
+	def _is_correct_coefs_matrix(self, matrix):
 		"""Checks if given matrix is filled with correct values in range [0;1]
 		if specified.
 		"""
@@ -49,8 +52,3 @@ class HoltWintersI(IntervalDataMixin, HoltWinters):
 		initial_values = np.array([0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1])
 		boundaries = [(0, 1)] * 12
 		return initial_values, boundaries
-
-	def _retreive_coefs(self, coefs):
-		"""Overriden coefs retreive function found by optimization algorithm"""
-		self.alpha, self.beta, self.gamma = self._coefs =flats_to_matrix(coefs)
-

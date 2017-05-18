@@ -24,10 +24,10 @@ class Hybrid(BasePredictModel):
 	Just two limitations: model should share same interface and be
 	appropropriate for given data
 	"""
-	def __init__(self, data, season_period=1, **kwargs):
+	def __init__(self, data, **kwargs):
 		BasePredictModel.__init__(self, data, **kwargs)
 
-		self.season_period = season_period
+		self.season_period = kwargs.get('season_period', 1)
 		#: non linear model will lookup for last two seasons of data
 		self.lookback = self.season_period
 		#: train epochs for nonlinear model

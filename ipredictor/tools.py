@@ -48,19 +48,23 @@ def data_reader(filename, intervals=False, resample=None, sep=";",
 	return data
 
 def flats_to_matrix(flats):
-	"""Converts 12 flat coefs to 3 smooting matrix
-	:param flats: 12 coefs to be used
-	:return: 3 matrix array [alpha, beta, gamma]
+	"""Converts flat coefs to smooting matrix
+	:param flats: 8 or 12 coefs to be used
+	:return: 2 or 3 matrix array [alpha, beta] or [alpha, beta, gamma]
 	"""
+	result = []
+
 	alphas = flats[:4]
-	betas = flats[4:8]
-	gammas = flats[8:12]
+	beta = flats[4:8]
 
-	alpha = np.matrix([[alphas[0], alphas[1]], [alphas[2], alphas[3]]])
-	beta = np.matrix([[betas[0], betas[1]], [betas[2], betas[3]]])
-	gamma = np.matrix([[gammas[0], gammas[1]], [gammas[2], gammas[3]]])
+	result.append(np.matrix([[alphas[0], alphas[1]], [alphas[2], alphas[3]]]))
+	result.append(np.matrix([[beta[0], beta[1]], [beta[2], beta[3]]]))
 
-	return alpha, beta, gamma
+	if len(flats) == 12:
+		gamma = flats[8:12]
+		result.append(np.matrix([[gamma[0], gamma[1]], [gamma[2], gamma[3]]]))
+
+	return result
 
 def validate_hdf5(filename):
 	""":raises ValueError: if given filename is not in HDF5 format"""
