@@ -6,6 +6,7 @@
 
 	:license: see LICENSE for more details
 """
+import functools
 import pandas as pd
 import numpy as np
 
@@ -70,3 +71,21 @@ def validate_hdf5(filename):
 	""":raises ValueError: if given filename is not in HDF5 format"""
 	if not filename.endswith('.h5'):
 		raise ValueError("Model weights should be HDF5 format")
+
+def dataframe_values_extractor(func):
+	"""Decorator function extracts dataframe values if dataframe passed
+	:param func: decorated function
+	:return: arrays instead of dataframes
+	"""
+	@functools.wraps(func)
+	def f(*args, **kwargs):
+		replaced_args = []
+		for arg in args:
+			try:
+				#: test if data is dataset and retreive values if true
+				arg = arg['values'].values
+			except:
+				pass
+			replaced_args.append(arg)
+		return func(*replaced_args, **kwargs)
+	return f

@@ -2,11 +2,14 @@
 """
 Base model features tests
 """
+from __future__ import division
+
 import unittest
 import numpy as np
 import pandas as pd
 
 from ipredictor.models import HoltWinters, Prediction
+from ipredictor.models.base import IntervalDataMixin
 from ipredictor.tools import data_reader
 
 
@@ -47,3 +50,34 @@ class BaseModelTestCase(unittest.TestCase):
 		diff = self.dataframe.index[1] - self.dataframe.index[0]
 		self.assertIsInstance(result.index[0], pd.Timestamp)
 		self.assertEqual(result.index[0], self.dataframe.index[-1] + diff)
+
+	def test_if_mse_error_for_its_properly_calculated(self):
+		model = IntervalDataMixin()
+		x = [np.array([[i+1], [i]]) for i in range(1, 11)]
+		y = [np.array([[i+1], [i]]) for i in range(3, 13)]
+		self.assertEqual(model.mse(x, y), 4)
+
+	def test_if_mad_error_properly_calculated_for_its(self):
+		model = IntervalDataMixin()
+		x = [np.array([[i+1], [i]]) for i in range(1, 11)]
+		y = [np.array([[i+1], [i]]) for i in range(3, 13)]
+		self.assertEqual(model.mad(x, y), 2)
+
+	def test_if_both_array_and_dataframe_can_be_used_for_error_calc(self):
+		model = IntervalDataMixin()
+		x = [np.array([[i+1], [i]]) for i in range(1, 11)]
+		y = [np.array([[i+1], [i]]) for i in range(3, 13)]
+		xdf = pd.DataFrame.from_items([('values', x)])
+		ydf = pd.DataFrame.from_items([('values', y)])
+
+		try:
+			model.mse(x,y)
+			model.mse(xdf,ydf)
+		except ValueError:
+			self.fail("Unexpected error raised")
+
+	def test_if_arv_error_value_properly_calculated(self):
+		model = IntervalDataMixin()
+		x = [np.array([[i+3], [i+2]]) for i in range(5)]
+		y = [np.array([[i+1], [i+1]]) for i in range(5)]
+		self.assertEqual(model.arv(x, y), 25/45)
