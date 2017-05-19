@@ -2,7 +2,11 @@
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy
 
+
+mpl.rc('font', **{'sans-serif' : 'Arial', 'family' : 'sans-serif'})
+majorFmt = mpl.dates.DateFormatter('%d/%m')
 
 class Plotter:
 	"""
@@ -13,26 +17,23 @@ class Plotter:
 	Show graphs: plotter.show()
 	"""
 
-	def __init__(self, title='', xlabel='', ylabel=''):
+	def __init__(self, rows=1, cols=1):
 		"""
 		:param title: common title of graph
 		:param xlabel: x-axis label, printed below graph
 		:param ylabel: y-axis label, printed at left of graph
 		"""
-		self.title = title
-		self.xlabel = xlabel
-		self.ylabel = ylabel
+		self.axs = []
+		self.fig = plt.figure()
 
-		self.fig, self.ax = plt.subplots()
-
-		mpl.rc('font', **{'sans-serif' : 'Arial', 'family' : 'sans-serif'})
-		majorFmt = mpl.dates.DateFormatter('%Y-%m-%d')
-		self.ax.xaxis.set_major_formatter(majorFmt)
-		self.ax.xaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(n=6))
-		self.ax.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator(5))
-		self.ax.grid(alpha=0.4)
-		self.ax.grid(which='minor', alpha=0.1)
-		self.ax.grid(True)
+		for x in range(rows):
+			for y in range(cols):
+				ax = plt.subplot2grid((rows, cols), (x, y))
+				ax.grid(alpha=0.4)
+				ax.grid(which='minor', alpha=0.1)
+				ax.grid(True)
+				self.axs.append(ax)
+		plt.tight_layout(w_pad=0.5, h_pad=3.0)
 
 	def add(self, data, **kwargs):
 		"""
@@ -40,6 +41,9 @@ class Plotter:
 		:param data: interval-valued or scalar dataframe
 		:param label: name of dataframe
 		"""
+		pos = kwargs.get('pos', 0)
+		self.axs[pos].xaxis.set_major_formatter(majorFmt)
+
 		if isinstance(data['values'].iloc[0], (np.ndarray, list)):
 			self._draw_intervals(data, **kwargs)
 		else:
@@ -48,34 +52,50 @@ class Plotter:
 	def _draw_points(self, data, **kwargs):
 		"""
 		Add scalar values graph to plot
+		:param data: dataframe containing interval-valued data
+		:param label: name of dataseries
+		:param color: matplotlib color identifier , default is autoselected
+		:param pos: position in graphs
 		"""
 		label = kwargs.get('label', '')
 		color = kwargs.get('color', '')
-		self.ax.plot(data, label=label, marker='o', markersize=3, alpha=0.6,
-		                color=color)
+		pos = kwargs.get('pos', 0)
+		self.axs[pos].plot(data, label=label, marker='o', markersize=3,
+		                   alpha=0.6, color=color)
 
 	def _draw_intervals(self, data, **kwargs):
 		"""Plots interval-valued data as bars
 		:param data: dataframe containing interval-valued data
 		:param label: name of interval-valued data
 		:param color: matplotlib color identifier , default is autoselected
+		:param pos: position in graphs
 		"""
 		label = kwargs.get('label', '')
 		color = kwargs.get('color', '')
+		pos = kwargs.get('pos', 0)
 		heights = [x[1] for x in data['values']]
 		bars = [x[0]-x[1] for x in data['values']]
-		self.ax.bar(data.index, bars, 0.015, heights, alpha=0.2, label=label,
-		            color=color, edgecolor=color)
+		self.axs[pos].bar(data.index, bars, 0.015, heights, alpha=0.2,
+		                  label=label, color=color, edgecolor=color)
 
-	def prepare(self):
+	def add_bars(self, bars, labels, pos=0):
+		"""
+		Draws bar with given labels
+		"""
+		x = range(len(bars))
+		self.axs[pos].bar(x, bars, color=['r', 'g', 'b', 'c'], align='center')
+		self.axs[pos].set_xticks(x, minor=False)
+		self.axs[pos].set_xticklabels(labels)
+
+	def prepare(self, pos=0, title='', xlabel='', ylabel=''):
 		"""
 		Prepares customized graph
 		"""
-		self.ax.legend(loc=3, prop={'size':10})
-		self.fig.autofmt_xdate()
-		self.ax.set_xlabel(self.xlabel)
-		self.ax.set_ylabel(self.ylabel)
-		self.ax.set_title(self.title)
+		self.axs[pos].legend(loc=3, prop={'size':10})
+		#self.fig.autofmt_xdate()
+		self.axs[pos].set_xlabel(xlabel)
+		self.axs[pos].set_ylabel(ylabel)
+		self.axs[pos].set_title(title)
 
 	def show(self):
 		"""Shows prepared figure"""
@@ -86,16 +106,17 @@ class Plotter:
 		:param name: imange name and path where image is saved
 		"""
 		plt.ioff()
-		self.fig.savefig(name, dpi=200, figsize=(20,10))
+		self.fig.set_size_inches(20, 10)
+		self.fig.savefig(name, dpi=200, bbox_inches='tight')
 
-	def add_table(self, cols, labels):
+	def add_table(self, cols, labels, pos=0):
 		"""Adds one row information table on top side of figure
 		:param cols: table columns data
 		:labels: table header labels
 		"""
 		#: no need in title when table used
-		self.ax.set_title(self.title)
-		self.ax.table(cellText=[cols], colLabels=labels, loc='top')
+		self.axs[pos].set_title('')
+		self.axs[pos].table(cellText=[cols], colLabels=labels, loc='top')
 
 	def __del__(self):
 		"""Clean figure"""

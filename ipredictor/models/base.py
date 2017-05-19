@@ -156,7 +156,7 @@ class IntervalDataMixin:
 			#: difference between previous forecast value and observed value
 			mean = real[i] - predicted[i]
 			error += np.dot(mean.transpose(), mean)[0][0]
-		return error
+		return float(error)
 
 	@staticmethod
 	@dataframe_values_extractor
@@ -170,7 +170,7 @@ class IntervalDataMixin:
 			max_diff = real[i][0] - predicted[i][0]
 			min_diff = real[i][1] - predicted[i][1]
 			error += (max_diff**2 + min_diff**2)
-		return error / (2 * fitted_intervals)
+		return float(error / (2 * fitted_intervals))
 
 	@staticmethod
 	@dataframe_values_extractor
@@ -184,7 +184,7 @@ class IntervalDataMixin:
 			max_diff = abs(real[i][0] - predicted[i][0])
 			min_diff = abs(real[i][1] - predicted[i][1])
 			error += (max_diff + min_diff)
-		return error / (2 * fitted_intervals)
+		return float(error / (2 * fitted_intervals))
 
 	@staticmethod
 	@dataframe_values_extractor
@@ -202,7 +202,7 @@ class IntervalDataMixin:
 			mse_min += (real[i][1] - predicted[i][1]) ** 2
 			mse_avg_max += (real[i][0] - predicted_mean[0]) ** 2
 			mse_avg_min += (real[i][1] - predicted_mean[1]) ** 2
-		return (mse_max + mse_min) / (mse_avg_max + mse_avg_min)
+		return float((mse_max + mse_min) / (mse_avg_max + mse_avg_min))
 
 
 class Prediction(object):
