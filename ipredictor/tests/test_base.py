@@ -80,4 +80,4 @@ class BaseModelTestCase(unittest.TestCase):
 		model = IntervalDataMixin()
 		x = [np.array([[i+3], [i+2]]) for i in range(5)]
 		y = [np.array([[i+1], [i+1]]) for i in range(5)]
-		self.assertEqual(model.arv(x, y), 25/45)
+		self.assertEqual(model.arv(x, y), 1.25)

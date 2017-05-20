@@ -195,13 +195,13 @@ class IntervalDataMixin:
 		mse_min = 0
 		mse_avg_max = 0
 		mse_avg_min = 0
-		predicted_mean = np.mean(predicted, axis=0)
+		sample_mean = np.mean(real, axis=0)
 
 		for i in range(min(len(real), len(predicted))):
 			mse_max += (real[i][0] - predicted[i][0]) ** 2
 			mse_min += (real[i][1] - predicted[i][1]) ** 2
-			mse_avg_max += (real[i][0] - predicted_mean[0]) ** 2
-			mse_avg_min += (real[i][1] - predicted_mean[1]) ** 2
+			mse_avg_max += (real[i][0] - sample_mean[0]) ** 2
+			mse_avg_min += (real[i][1] - sample_mean[1]) ** 2
 		return float((mse_max + mse_min) / (mse_avg_max + mse_avg_min))
 
 
