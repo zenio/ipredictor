@@ -2,11 +2,11 @@
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy
 
 
 mpl.rc('font', **{'sans-serif' : 'Arial', 'family' : 'sans-serif'})
 majorFmt = mpl.dates.DateFormatter('%d/%m')
+
 
 class Plotter:
 	"""
@@ -17,7 +17,7 @@ class Plotter:
 	Show graphs: plotter.show()
 	"""
 
-	def __init__(self, rows=1, cols=1):
+	def __init__(self, rows=1, cols=1, total=None):
 		"""
 		:param title: common title of graph
 		:param xlabel: x-axis label, printed below graph
@@ -26,13 +26,15 @@ class Plotter:
 		self.axs = []
 		self.fig = plt.figure()
 
-		for x in range(rows):
-			for y in range(cols):
-				ax = plt.subplot2grid((rows, cols), (x, y))
-				ax.grid(alpha=0.4)
-				ax.grid(which='minor', alpha=0.1)
-				ax.grid(True)
-				self.axs.append(ax)
+		width_ratios = [3 if x < 2 else 1 for x in range(cols)]
+		gs = mpl.gridspec.GridSpec(rows, cols, width_ratios=width_ratios)
+
+		for x in range(rows * cols):
+			ax = plt.subplot(gs[x])
+			ax.grid(alpha=0.4)
+			ax.grid(which='minor', alpha=0.1)
+			ax.grid(True)
+			self.axs.append(ax)
 		plt.tight_layout(w_pad=0.5, h_pad=3.0)
 
 	def add(self, data, **kwargs):

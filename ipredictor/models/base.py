@@ -204,6 +204,21 @@ class IntervalDataMixin:
 			mse_avg_min += (real[i][1] - sample_mean[1]) ** 2
 		return float((mse_max + mse_min) / (mse_avg_max + mse_avg_min))
 
+	@staticmethod
+	@dataframe_values_extractor
+	def mape(real, predicted):
+		"""Mean absolute percentage error (MAPE) accuracy measure method
+		for interval-valued data"""
+		mape_h = 0
+		mape_l = 0
+		fitted_intervals = min(len(real), len(predicted))
+
+		for i in range(fitted_intervals):
+			mape_h += abs((real[i][0] - predicted[i][0]) / real[i][0])
+			mape_l += abs((real[i][1] - predicted[i][1]) / real[i][1])
+		mape_h = mape_h * 100 / fitted_intervals
+		mape_l = mape_l * 100 / fitted_intervals
+		return np.average([mape_h, mape_l])
 
 class Prediction(object):
 	"""
