@@ -21,7 +21,7 @@ class LSTMI(ANNI):
 		ANN model is simple MLP with one hidden layer
 		"""
 		self.model = Sequential()
-		self.model.add(LSTM(self.hidden_neurons*2,
+		self.model.add(LSTM(self.hidden_neurons*4,
 		                    input_shape=(1, self.input_neurons)))
 		self.model.add(Dense(self.output_neurons))
 		self.model.compile(loss='mean_squared_error', optimizer='adam')

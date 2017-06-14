@@ -10,6 +10,8 @@ ANN model for nonlinear prediction of estimates.
 import pandas as pd
 import numpy as np
 
+from itertools import izip
+
 from ipredictor.models import HoltWinters, HoltWintersI, ANN, ANNI
 from ipredictor.defaults import TRAIN_EPOCHS
 from .base import BasePredictModel, IntervalDataMixin
@@ -103,9 +105,10 @@ class Hybrid(BasePredictModel):
 		linear = self._predict_linear_component()
 
 		real_values = self.X[1:]
-		predicted_values = np.array(linear.Xf)
-		diff = real_values - predicted_values[:len(real_values)]
-		self.estimates = pd.DataFrame.from_items([('values', diff.tolist())])
+		predicted_values = linear.Xf[:len(real_values)]
+		diff = [x-y for x, y in izip(real_values, predicted_values)]
+
+		self.estimates = pd.DataFrame.from_items([('values', diff)])
 		self.estimates = self.estimates.set_index(self.data.index[1:])
 
 		self._predict_non_linear_component()

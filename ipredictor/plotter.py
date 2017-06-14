@@ -24,7 +24,7 @@ class Plotter:
 		:param ylabel: y-axis label, printed at left of graph
 		"""
 		self.axs = []
-		self.fig = plt.figure()
+		self.fig = plt.figure(facecolor='white')
 
 		width_ratios = [3 if x < 2 else 1 for x in range(cols)]
 		gs = mpl.gridspec.GridSpec(rows, cols, width_ratios=width_ratios)
@@ -77,7 +77,7 @@ class Plotter:
 		pos = kwargs.get('pos', 0)
 		heights = [x[1] for x in data['values']]
 		bars = [x[0]-x[1] for x in data['values']]
-		self.axs[pos].bar(data.index, bars, 0.015, heights, alpha=0.2,
+		self.axs[pos].bar(data.index, bars, 0.015, heights, alpha=0.5,
 		                  label=label, color=color, edgecolor=color)
 
 	def add_bars(self, bars, labels, pos=0):
