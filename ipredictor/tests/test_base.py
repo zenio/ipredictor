@@ -86,5 +86,13 @@ class BaseModelTestCase(unittest.TestCase):
 		model = IntervalDataMixin()
 		x = [np.array([[i+3], [i+2]]) for i in range(5)]
 		y = [np.array([[i+2], [i+1]]) for i in range(5)]
-		print model.mape(x, y)
 		self.assertTrue(np.isclose(model.mape(x, y), 25.42, rtol=1e-02))
+
+	def test_if_u_tale_error_value_properly_calculated(self):
+		model = IntervalDataMixin()
+		x = [np.array([[i+3], [i+2]]) for i in range(5)]
+		y = [np.array([[i+2], [i+1]]) for i in range(5)]
+		self.assertTrue(np.isclose(model.utale(x, y), 1, rtol=1e-02))
+
+		x = [np.array([[2], [1]])]
+		self.assertRaises(ValueError, model.utale, x, y)

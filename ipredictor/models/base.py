@@ -220,6 +220,28 @@ class IntervalDataMixin:
 		mape_l = mape_l * 100 / fitted_intervals
 		return np.average([mape_h, mape_l])
 
+	@staticmethod
+	@dataframe_values_extractor
+	def utale(real, predicted):
+		"""Interval U of Theil statistics (UI) accuracy measure method
+		for interval-valued data"""
+		highs_diff = 0
+		lows_diff = 0
+		step_highs = 0
+		step_lows = 0
+
+		if len(real) < 2:
+			raise ValueError(u"At least two real value required")
+
+		for i in range(1, min(len(real), len(predicted))):
+			highs_diff += (real[i][0] - predicted[i][0]) ** 2
+			lows_diff += (real[i][1] - predicted[i][1]) ** 2
+			step_highs += (real[i][0] - real[i-1][0]) ** 2
+			step_lows += (real[i][1] - real[i-1][1]) ** 2
+		diff_sum = highs_diff + lows_diff
+		steps_sum = step_highs + step_lows
+		return float(np.sqrt(diff_sum / steps_sum))
+
 class Prediction(object):
 	"""
 	Model for results representation. Contains all necessary information for
