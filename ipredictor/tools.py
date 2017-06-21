@@ -14,7 +14,7 @@ from defaults import RESAMPLE_PERIOD
 
 
 def data_reader(filename, intervals=False, resample=None, sep=";",
-                resample_period=RESAMPLE_PERIOD):
+                resample_period=RESAMPLE_PERIOD, **kwargs):
 	"""Reads file specified by <filename> and returns data suitable for further
 	analysis.
 	Data should be interval-valued (2 columns with minimums and maximums) or
@@ -26,6 +26,7 @@ def data_reader(filename, intervals=False, resample=None, sep=";",
 	:param resample: if true, will resample missing rows in data
 	:param resample_period: identifier passed to resample function. Ex: H, S...
 	:param sep: data file cells separator
+	:param column: get only mins or maxs column of intervals
 
 	:return: formatted and resampled (if necessary) dataframe. If interval
 			 valued data then 'minimums' & 'maximums' columns returned,
@@ -42,8 +43,13 @@ def data_reader(filename, intervals=False, resample=None, sep=";",
 		data = data.resample(resample_period).mean().interpolate(method='time')
 
 	if intervals:
-		x = [np.array([[x], [y]]) for x,y in zip(data['maxs'], data['mins'])]
-		data['values'] = pd.Series.from_array(x, index=data.index)
+		column = kwargs.get('column', None)
+		if column:
+			data['values'] = data[column]
+		else:
+			x = [np.array([[x], [y]]) for x,y in zip(data['maxs'],
+			                                         data['mins'])]
+			data['values'] = pd.Series.from_array(x, index=data.index)
 		#: remove helper columns
 		data = data.drop('mins', 1).drop('maxs', 1)
 	return data

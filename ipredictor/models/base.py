@@ -188,14 +188,16 @@ class IntervalDataMixin:
 
 	@staticmethod
 	@dataframe_values_extractor
-	def arv(real, predicted):
+	def arv(real, predicted, sample):
 		"""Interval average relative variance (ARVI) accuracy measure method
-		for interval-valued data"""
+		for interval-valued data
+		:param sample: values for median calculation
+		"""
 		mse_max = 0
 		mse_min = 0
 		mse_avg_max = 0
 		mse_avg_min = 0
-		sample_mean = np.mean(real, axis=0)
+		sample_mean = np.mean(sample, axis=0)
 
 		for i in range(min(len(real), len(predicted))):
 			mse_max += (real[i][0] - predicted[i][0]) ** 2
@@ -231,7 +233,7 @@ class IntervalDataMixin:
 		step_lows = 0
 
 		if len(real) < 2:
-			raise ValueError(u"At least two real value required")
+			raise ValueError(u"At least two real values required")
 
 		for i in range(1, min(len(real), len(predicted))):
 			highs_diff += (real[i][0] - predicted[i][0]) ** 2

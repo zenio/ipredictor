@@ -80,7 +80,7 @@ class BaseModelTestCase(unittest.TestCase):
 		model = IntervalDataMixin()
 		x = [np.array([[i+3], [i+2]]) for i in range(5)]
 		y = [np.array([[i+1], [i+1]]) for i in range(5)]
-		self.assertEqual(model.arv(x, y), 1.25)
+		self.assertEqual(model.arv(x, y, x), 1.25)
 
 	def test_if_mape_error_value_properly_calculated(self):
 		model = IntervalDataMixin()
