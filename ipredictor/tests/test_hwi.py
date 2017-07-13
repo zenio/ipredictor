@@ -80,6 +80,7 @@ class HWITestCase(unittest.TestCase):
 		expected = np.array([[3], [2]])
 		self.hwi.coefs = self.coefs
 		self.hwi.predict()
+		print self.hwi.Xf
 		self.assertTrue(np.array_equal(expected, self.hwi.Xf[0]))
 
 	def test_if_rmse_can_be_calculated(self):

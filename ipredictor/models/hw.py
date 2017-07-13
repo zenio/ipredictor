@@ -181,3 +181,13 @@ class HoltWinters(BasePredictModel):
 		self._extract_coefs(result[0])
 		logger.debug("Optimal coefficients found: {}".format(self._coefs))
 
+	def _post_process_prediction(self):
+		"""Post process prediction values. Just retrun result"""
+		try:
+			if not self.Xf[0].shape[0] == 2:
+				self.Xf = [x[0] for x in self.Xf]
+		except IndexError:
+			pass
+		return BasePredictModel._post_process_prediction(self)
+
+

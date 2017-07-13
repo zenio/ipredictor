@@ -110,6 +110,23 @@ def separate_components(dataframe):
 	radius = [(x[0][0] - x[0][1]) / 2  for x in vals]
 	centers_df = pd.DataFrame.from_items([('values', centers)])
 	radius_df = pd.DataFrame.from_items([('values', radius)])
-	centers_df.set_index(dataframe.index)
-	radius_df.set_index(dataframe.index)
+	centers_df = centers_df.set_index(dataframe.index)
+	radius_df = radius_df.set_index(dataframe.index)
 	return centers_df, radius_df
+
+def combine_components(centers, radius):
+	"""
+	Combines two separate linear and non-linear components into one interval-
+	valued dataframe
+	:param centers: linear component
+	:param radius: non-linear component
+	:return: combined interval-valued dataframe
+	"""
+	highs, lows = [], []
+	for c, r in zip(centers.values, radius.values):
+		highs.append(c + r)
+		lows.append(c - r)
+	x = [np.array([[x], [y]]) for x, y in zip(highs, lows)]
+	combination = pd.DataFrame.from_items([('values', x)])
+	combination = combination.set_index(centers.index)
+	return combination

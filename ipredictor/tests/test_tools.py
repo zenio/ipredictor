@@ -7,7 +7,8 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from ipredictor.tools import data_reader, validate_hdf5, separate_components
+from ipredictor.tools import (data_reader, validate_hdf5, separate_components,
+                              combine_components)
 
 
 POINTS_DATA_FILE = 'assets/points.csv'
@@ -52,4 +53,11 @@ class DataReaderTestCase(unittest.TestCase):
 		self.assertTrue(all([len(centers) == 10, len(radius) == 10]))
 		self.assertEqual(centers.values[0], 1.5)
 		self.assertEqual(radius.values[0], 0.5)
+
+	def test_if_can_compine_separate_components(self):
+		centers = [np.array(i) for i in range(2, 12)]
+		radius = [np.array(i) for i in range(1, 11)]
+		centers_df = pd.DataFrame.from_items([('values', centers)])
+		radius_df = pd.DataFrame.from_items([('values', radius)])
+		combined = combine_components(centers_df, radius_df)
 

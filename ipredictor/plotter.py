@@ -5,7 +5,7 @@ import numpy as np
 
 
 mpl.rc('font', **{'sans-serif' : 'Arial', 'family' : 'sans-serif'})
-majorFmt = mpl.dates.DateFormatter('%d/%m')
+majorFmt = mpl.dates.DateFormatter('%Y-%m-%d')
 
 
 class Plotter:
@@ -26,7 +26,7 @@ class Plotter:
 		self.axs = []
 		self.fig = plt.figure(facecolor='white')
 
-		width_ratios = [3 if x < 2 else 1 for x in range(cols)]
+		width_ratios = [1 if x < 2 else 1 for x in range(cols)]
 		gs = mpl.gridspec.GridSpec(rows, cols, width_ratios=width_ratios)
 
 		for x in range(rows * cols):
@@ -80,14 +80,20 @@ class Plotter:
 		self.axs[pos].bar(data.index, bars, 0.015, heights, alpha=0.5,
 		                  label=label, color=color, edgecolor=color)
 
-	def add_bars(self, bars, labels, pos=0):
+	def add_bars(self, bars, labels, pos=0, **kwargs):
 		"""
 		Draws bar with given labels
 		"""
 		x = range(len(bars))
-		self.axs[pos].bar(x, bars, color=['r', 'g', 'b', 'c'], align='center')
-		self.axs[pos].set_xticks(x, minor=False)
-		self.axs[pos].set_xticklabels(labels)
+		color = kwargs.get('color', ['r', 'g', 'b', 'c'])
+
+		#self.axs[pos].bar(x, bars, color=color, align='center')
+		#self.axs[pos].set_xticks(x, minor=False)
+		#self.axs[pos].set_xticklabels(labels)
+
+		self.axs[pos].barh(x, bars, color=color, align='center')
+		self.axs[pos].set_yticks(x, minor=False)
+		self.axs[pos].set_yticklabels(labels)
 
 	def prepare(self, pos=0, title='', xlabel='', ylabel=''):
 		"""
