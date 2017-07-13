@@ -7,7 +7,7 @@ import unittest
 import numpy as np
 import pandas as pd
 
-from ipredictor.tools import data_reader, validate_hdf5
+from ipredictor.tools import data_reader, validate_hdf5, separate_components
 
 
 POINTS_DATA_FILE = 'assets/points.csv'
@@ -45,4 +45,11 @@ class DataReaderTestCase(unittest.TestCase):
 		except ValueError:
 			self.fail("Unexpected error raised")
 
+	def test_if_can_separate_intervals_into_components(self):
+		values = [np.array([[i+1], [i]]) for i in range(1, 11)]
+		df = pd.DataFrame.from_items([('values', values)])
+		centers, radius = separate_components(df)
+		self.assertTrue(all([len(centers) == 10, len(radius) == 10]))
+		self.assertEqual(centers.values[0], 1.5)
+		self.assertEqual(radius.values[0], 0.5)
 

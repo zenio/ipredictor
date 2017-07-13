@@ -6,6 +6,8 @@
 
 	:license: see LICENSE for more details
 """
+from __future__ import division
+
 import functools
 import pandas as pd
 import numpy as np
@@ -95,3 +97,19 @@ def dataframe_values_extractor(func):
 			replaced_args.append(arg)
 		return func(*replaced_args, **kwargs)
 	return f
+
+def separate_components(dataframe):
+	"""
+	Separates linear and nonlinear components of given interval-valued
+	dataframe
+	:param dataframe: interval-valued dataframe
+	:return: <dataframe>, <dataframe> - linear and nonlinear components
+	"""
+	vals = dataframe.values
+	centers = [(x[0][0] + x[0][1]) / 2  for x in vals]
+	radius = [(x[0][0] - x[0][1]) / 2  for x in vals]
+	centers_df = pd.DataFrame.from_items([('values', centers)])
+	radius_df = pd.DataFrame.from_items([('values', radius)])
+	centers_df.set_index(dataframe.index)
+	radius_df.set_index(dataframe.index)
+	return centers_df, radius_df
