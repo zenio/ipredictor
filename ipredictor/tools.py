@@ -16,7 +16,7 @@ from defaults import RESAMPLE_PERIOD
 
 
 def data_reader(filename, intervals=False, resample=None, sep=";",
-                resample_period=RESAMPLE_PERIOD, **kwargs):
+				resample_period=RESAMPLE_PERIOD, **kwargs):
 	"""Reads file specified by <filename> and returns data suitable for further
 	analysis.
 	Data should be interval-valued (2 columns with minimums and maximums) or
@@ -40,7 +40,7 @@ def data_reader(filename, intervals=False, resample=None, sep=";",
 	headers.extend(['mins', 'maxs'] if intervals else ['values'])
 
 	data = pd.read_csv(filename, sep=sep, names=headers, dtype=dtypes,
-	                   parse_dates=date_parsers, index_col='datetime')
+					   parse_dates=date_parsers, index_col='datetime')
 	if resample:
 		data = data.resample(resample_period).mean().interpolate(method='time')
 
@@ -49,12 +49,13 @@ def data_reader(filename, intervals=False, resample=None, sep=";",
 		if column:
 			data['values'] = data[column]
 		else:
-			x = [np.array([[x], [y]]) for x,y in zip(data['maxs'],
-			                                         data['mins'])]
+			x = [np.array([[x], [y]]) for x, y in zip(data['maxs'],
+													  data['mins'])]
 			data['values'] = pd.Series.from_array(x, index=data.index)
 		#: remove helper columns
 		data = data.drop('mins', 1).drop('maxs', 1)
 	return data
+
 
 def flats_to_matrix(flats):
 	"""Converts flat coefs to smooting matrix
@@ -75,16 +76,19 @@ def flats_to_matrix(flats):
 
 	return result
 
+
 def validate_hdf5(filename):
 	""":raises ValueError: if given filename is not in HDF5 format"""
 	if not filename.endswith('.h5'):
 		raise ValueError("Model weights should be HDF5 format")
+
 
 def dataframe_values_extractor(func):
 	"""Decorator function extracts dataframe values if dataframe passed
 	:param func: decorated function
 	:return: arrays instead of dataframes
 	"""
+
 	@functools.wraps(func)
 	def f(*args, **kwargs):
 		replaced_args = []
@@ -96,7 +100,9 @@ def dataframe_values_extractor(func):
 				pass
 			replaced_args.append(arg)
 		return func(*replaced_args, **kwargs)
+
 	return f
+
 
 def separate_components(dataframe):
 	"""
@@ -106,13 +112,14 @@ def separate_components(dataframe):
 	:return: <dataframe>, <dataframe> - linear and nonlinear components
 	"""
 	vals = dataframe.values
-	centers = [(x[0][0] + x[0][1]) / 2  for x in vals]
-	radius = [(x[0][0] - x[0][1]) / 2  for x in vals]
+	centers = [(x[0][0] + x[0][1]) / 2 for x in vals]
+	radius = [(x[0][0] - x[0][1]) / 2 for x in vals]
 	centers_df = pd.DataFrame.from_items([('values', centers)])
 	radius_df = pd.DataFrame.from_items([('values', radius)])
 	centers_df = centers_df.set_index(dataframe.index)
 	radius_df = radius_df.set_index(dataframe.index)
 	return centers_df, radius_df
+
 
 def combine_components(centers, radius):
 	"""

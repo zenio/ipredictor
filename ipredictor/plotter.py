@@ -1,4 +1,7 @@
 #: -*- coding: utf-8 -*-
+"""
+Helper wrapper class for mathplotlib
+"""
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
